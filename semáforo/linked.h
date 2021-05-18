@@ -5,11 +5,10 @@
 
 struct d_list{
   int lin,col,turn;
-  char **tab;
-  struct player a,b;
-  char piece;
-  int x,y;
-  struct d_list *prev,*next;
+  struct player a; //jogador que fez a ultima jogada
+  char piece; //ultima peca colocada pelo jogador
+  int x,y; //coordenadas em que essa peca foi inserida
+  struct d_list *prev,*next; 
 };
 
 struct d_list * create_list();

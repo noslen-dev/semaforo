@@ -13,7 +13,7 @@ struct plays{
   bool red;
   int rock;
   int lc;
-  bool k_prev;
+  bool k_interrupt;
 };
 
 struct player{
@@ -21,11 +21,10 @@ struct player{
   struct plays ability;
 };
 
-void update_player(char **tab, int lin, int col ,struct player *a);
+void update_player(char **tab, int lin, int col,int turn ,struct player *a);
 void show_plays(struct player a);
-int validate_play(struct player a,char play);
 char ask_play(struct player a);
-int interpret_play(char **tab, int lin, int col, char play, struct player *a);
+int interpret_play(char **tab, int lin, int col, char play,int x, int y, struct player *a);
 void ask_place(int *x, int *y,int lin, int col);
 char **add_l_c(char ***tab, int *lin, int *col, char play, struct player *a);
 

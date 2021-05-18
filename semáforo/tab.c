@@ -3,12 +3,25 @@
 #include "tab.h"
 #include "utils.h"
 
+
+
+/*************
+ * void free_tab(tabuleiro de jogo, numero de linhas)
+ * Liberta um tabuleiro de jogo
+ ***************/
+static void free_tab(char **tab, int lin){
+int i;
+for(i=0; i<lin; ++i)
+  free(tab[i]);
+free(tab);
+}
+
+
 /*************
  * void init_lin(linha para inicializar, numero de colunas)
  * inicializa com ' ' a linha, apontada pelo parametro "linha"
- * 
  ***************/
-void init_lin(char *lin, int col){
+static void init_lin(char *lin, int col){
 int i;
 for(i=0; i<col; ++i)
   lin[i]=' ';
@@ -17,41 +30,56 @@ for(i=0; i<col; ++i)
 /*************
  * void init_col(tabuleiro de jogo, numero de linhas, numero da coluna para inicializar)
  * inicializa com ' ', o numero da coluna passada como argumento
- * 
  ***************/
-void init_col(char **tab, int lin, int col){
+static void init_col(char **tab, int lin, int col){
 int i;
 for(i=0; i<lin; ++i)
   tab[i][col]=' ';
 }
 
+/*************
+ *  void draw_tab(tabuleiro de jogo, numero de linhas, numero de colunas)
+ *  utiliza a função "init_lin", para colocar todas as posições do tabuleiro com
+ *  ' '
+ ***************/
+static void init_tab(char **tab, int lin ,int col){
+int i;
+for(i=0; i<lin; ++i)
+  init_lin(tab[i],col);
+}
 
 /*************
  *  char **create_tab(tabuleiro de jogo, numero de linhas, numero de colunas)
- *  cria um tabuleiro de jogo, com um numero aleatorio entre [3,5] de linhas.
+ *  Cria um tabuleiro de jogo, com um numero aleatorio entre [3,5] de linhas.
  *  Aloca espaço de tal forma, que "tabuleiro" fica a apontar para um array dinamico
  *  de char * que apontam para um array dinamico de char em que cada um deles(array de char)
- *  representa uma linha.
- *  se a alocação de qualquer elemento falhar, devolve NULL, caso contrario 
+ *  representa uma linha. Basicamente cria uma matriz linhas*colunas na heap
+ *  Inicializa o tabuleiro criado com ' '
+ *  Se a alocação de qualquer elemento falhar, devolve NULL, caso contrario 
  *  devolve o tabuleiro e altera o numero de linhas e colunas.
+ *  Limpa a memoria antes de retornar NULL.
  ***************/
 char **create_tab(char **tab, int *lin, int *col){
 int i;
+initRandom();
 *lin=*col=intUniformRnd(3,5);
 if( (tab=malloc(sizeof(char *)* *lin))==NULL ){
-  fprintf(stderr,"Erro ao alocar espaço para o tabuleiro\n");
+  printf("Erro ao alocar espaço para o tabuleiro\n");
+  fprintf(stderr,ALLOCATION_ERROR);
   *lin=*col=0;
   return NULL;
 }
 for(i=0; i<*lin; ++i)
   if( ( tab[i]=(char *)malloc(sizeof(char)* *lin) )==NULL ){
-     fprintf(stderr,"Erro ao alocar espaço para o tabuleiro\n");
+     printf("Erro ao alocar espaço para o tabuleiro\n");
+     fprintf(stderr,ALLOCATION_ERROR);
      while(--i && i>=0)
        free(tab[i]);
      free(tab);
      *lin=*col=0;
      return NULL;
   }
+init_tab(tab,*lin,*col);
 return tab;
 }
 
@@ -64,7 +92,7 @@ return tab;
 void draw_tab(char **tab, int lin, int col){
 int i,j,aux;
 for(i=0; i<lin; ++i){
-  printf("  %d ",i); 
+  printf("  %d ",i+1); 
   for(j=0; j<col; ++j)
     printf(" %c %c",tab[i][j],j+1==col ? ' ': '|'); 
   if(i+1!=lin){
@@ -79,19 +107,7 @@ for(i=0; i<lin; ++i){
  }
 printf("\n  ");
 for(i=0; i<col; ++i)
-  printf("   %d",i);
-}
-
-
-/*************
- *  void draw_tab(tabuleiro de jogo, numero de linhas, numero de colunas)
- *  utiliza a função "init_lin", para colocar todas as posições do tabuleiro com
- *  ' '
- ***************/
-void init_tab(char **tab, int lin ,int col){
-int i;
-for(i=0; i<lin; ++i)
-  init_lin(tab[i],col);
+  printf("   %d",i+1);
 }
 
 
@@ -99,31 +115,27 @@ for(i=0; i<lin; ++i)
 /*************
  *  void add_lin(tabuleiro de jogo, numero de linhas, numero de colunas)
  *  adiciona uma linha ao tabuleiro de jogo. Para isso aumenta o array de 
- *  ponteiros, inicializa esse ponteiro com uma linha, e preenche essa linha 
- *  com ' '
- *  Se o aumento do array de linhas falhar, devolve a tabela como estava antes
- *  Se o aumento do array for um sucesso, mas a inicialização do novo elemento falhar
- *  a função tenta voltar ao estado anterior do tabuleiro e devolve o tabuleiro como
- *  estava antes.
- *  Se nao conseguir repor o estado anterior do tabuleiro, retorna NULL.
- *  
+ *  ponteiros. 
+ *  Inicializa esse ponteiro com uma linha, e preenche essa linha com ' '
+ *  Se a alocacao falhar, a função limpa o tabuleiro e retorna NULL
+ *  Se tudo correr bem devolve o tabuleiro
  ***************/
 char **add_lin(char **tab ,int *lin, int col){
 char **aux;
 if( (aux=(char**)realloc(tab,sizeof(char *)*(*lin+1)) )==NULL ) {
-  printf("Erro ao alocar espaço para o tabuleiro\n");
-  return tab;
+  printf("Erro ao adicionar uma linha\n");
+  fprintf(stderr,ALLOCATION_ERROR);
+  free_tab(tab,*lin);
+  return NULL;
  }
 ++*lin;
 tab=aux;
 if( (tab[*lin-1]=malloc(sizeof(char)*col))==NULL ){
   printf("Erro ao adicionar uma linha\n");
-  if( ( tab=realloc(tab,sizeof(char)* (*lin-1) ) )==NULL){ //reduzimos o array
-  fprintf(stderr,"Erro fatal, o programa terminara\n");
-  return NULL;
-  }
+  fprintf(stderr,ALLOCATION_ERROR);
   --*lin;
-  return tab;
+  free_tab(tab,*lin);
+  return NULL;
 }
 init_lin(tab[*lin-1],col);
 return tab;
@@ -133,26 +145,20 @@ return tab;
 
 /*************
  *  void add_col(tabuleiro de jogo, numero de linhas, numero de colunas)
- *  adiciona uma linha ao tabuleiro, adicionando mais um elemento ao final de cada
+ *  Adiciona uma coluna ao tabuleiro, adicionando mais um elemento ao final de cada
  *  linha e inicializa essa coluna com ' '
- *  Se uma alocação falhar a função tenta voltar atrás e repor o tabuleiro ao seu
- *  estado original e retorna tab se o conseguir fazer.
- *  Caso nao consiga repor o tabuleiro ao seu estado original, retorna NULL.
- *  
- *  
+ *  Se a alocacao falhar, a função limpa o tabuleiro e retorna NULL
+ *  Se tudo correr bem devolve o tabuleiro
  ***************/
 char **add_col(char **tab ,int lin, int *col){
 int i;
 char *aux;
 for(i=0; i<lin; ++i)
   if( ( aux=realloc(tab[i],sizeof(char)* (*col+1)) )==NULL ){
-     fprintf(stderr,"Erro ao alocar espaço para o tabuleiro\n");
-     while(--i && i>=0)
-       if( (tab[i]=realloc(tab[i],sizeof(char)* *col) )==NULL){
-         fprintf(stderr,"Erro fatal, o programa terminara\n");
-         return NULL;
-       }
-     return tab;
+    printf("Erro ao adicionar uma linha\n");
+     fprintf(stderr,ALLOCATION_ERROR);
+     free_tab(tab,lin);
+     return NULL;
   }
   else
     tab[i]=aux;
@@ -190,7 +196,7 @@ int i,j;
 bool flag=0;
 for(i=0; i<col; ++i){
   for(j=flag=0; j<lin-1; ++j)
-    if(tab[j][i]!=tab[j+1][i] || tab[i][j]==' ' || tab[i][j]=='S')
+    if(tab[j][i]!=tab[j+1][i] || tab[j][i]==' ' || tab[j][i]=='S')
       flag=1;
   if(flag==0)
     return 1;
@@ -203,17 +209,24 @@ return 0;
  *  bool check_diagonal(tabuleiro de jogo, numero de linhas, numero de colunas)
  *  Verifica se qualquer uma das diagonais contem carateres todos iguais exeto ' '
  *  e 'S'
+ *  O tabuleiro tem de ser quadrado
  *  Devolve 1 em caso afirmativo, e 0 em caso contrario
  ***************/
 bool check_diagonal(char **tab, int lin, int col){
 if(lin!=col)
   return 0;
 int i,j;
-for(i=0; i<lin-1; ++i)
-  if(tab[i][i]!=tab[i+1][i+1] || tab[i][j]==' ' || tab[i][j]=='S') 
-    return 0;
-for(i=0,j=lin; i<lin-1; ++i,--j)
+bool flag;
+for(i=flag=0; i<lin-1; ++i)
+  if(tab[i][i]!=tab[i+1][i+1] || tab[i][i]==' ' || tab[i][i]=='S')
+    flag=1;
+if(flag==0) //se nao ficou a 1 e porque correu tudo bem
+  return 1;
+
+for(i=0,j=lin-1; i<lin-1 ; ++i,--j)
   if(tab[i][j]!=tab[i+1][j-1] || tab[i][j]==' ' || tab[i][j]=='S')
-    return 0;
+    return 0; //como nao ha mais nada para ver, retornamos logo 0
+return 1;
 }
+
 
