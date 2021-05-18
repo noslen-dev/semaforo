@@ -9,8 +9,8 @@
  * Retorna 1 se "piece" estiver na posição tab[x][y]
  * Retorna 0 caso contrario
  */
-static int cell_has_piece(char **tab, int x, int y, char piece){
-return tab[x][y]==piece ? 1 : 0;
+static int cell_has_piece(char **tab, struct coordinates place, char piece){
+return tab[place.x][place.y]==piece ? 1 : 0;
 }
 
 /*******
@@ -18,8 +18,8 @@ return tab[x][y]==piece ? 1 : 0;
  * retorna 1 se x e y estiverem dentro dos limites do tabuleiro
  * retorna 0 caso contrario
  */
-static bool is_inside(int x, int y, int lin, int col){
-return x<=lin && x>=1 && y<=col && y>=1 ? 1 : 0;
+static bool is_inside(struct coordinates place, int lin, int col){
+return place.x<=lin && place.x>=1 && place.y<=col && place.y>=1 ? 1 : 0;
 }
 
 
@@ -165,20 +165,20 @@ return play;
  * Obriga o utilizador a introduzir coordenadas dentro do tabuleiro e num formato valido
  * Coloca as coordenadas inseridas nos parametros "x" e "y".
  */
-void ask_place(int *x, int *y,int lin, int col){
+void ask_place(struct coordinates *place, int lin, int col){
 int flag=0;
-*x=*y=-1;
+place->x=place->y=-1;
 printf("Digite as coordenadas do tabuleiro em que quer inserir a peca: ");
 do{
-  if( ( flag=scanf("%d%d",x,y) ) !=2){
+  if( ( flag=scanf("%d%d",&place->x,&place->y) ) !=2){
     printf("Digite as coordenadas no formato certo x y: ");
     clean_stdin();
     continue;
   }
-  if(is_inside(*x,*y,lin,col)==0)
+  if(is_inside(*place,lin,col)==0)
     printf("Digite coordenadas validas: ");
   clean_stdin();
- }while(flag!=2 || is_inside(*x,*y,lin,col)==0);
+ }while(flag!=2 || is_inside(*place,lin,col)==0);
 }
 
 
@@ -190,37 +190,37 @@ do{
  * Retorna 0 se a jogada for valida
  * Retorna 1 e exibe uma mensagem de erro se a jogada for invalida.
  */
-int interpret_play(char **tab, int lin, int col, char play,int x, int y, struct player *a){
---x;--y; //indices normais
+int interpret_play(char **tab, int lin, int col, char play,struct coordinates place, struct player *a){
+--place.x; --place.y;
 switch(play){
   case 'G': //inserir peça verde
-    if(cell_has_piece(tab,x,y,' ')==0){ //se nao tiver ' ' nao se pode meter verde
+    if(cell_has_piece(tab,place,' ')==0){ //se nao tiver ' ' nao se pode meter verde
       printf(OCC_POS);
       return 1;
     }
-    tab[x][y]='G';
+    tab[place.x][place.y]='G';
     break;
   case 'Y' : //trocar verde por amarela
-    if(cell_has_piece(tab,x,y,'G')==0){
+    if(cell_has_piece(tab,place,'G')==0){
       printf("Nessa posicao nao esta uma peca verde para ser trocada\n");
       return 1;
     }
-    tab[x][y]='Y';
+    tab[place.x][place.y]='Y';
     break;
   case 'R': //inserir pedra
-    if(cell_has_piece(tab,x,y,'Y')==0){
+    if(cell_has_piece(tab,place,'Y')==0){
       printf("Nessa posicao nao esta uma peca amarela para ser trocada\n");
       return 1;
     }
-    tab[x][y]='R';
+    tab[place.x][place.y]='R';
     break;
 
     case 'S': //inserir pedra
-    if(cell_has_piece(tab,x,y,' ')==0){
+    if(cell_has_piece(tab,place,' ')==0){
       printf(OCC_POS);
       return 1; 
     }
-    tab[x][y]='S';
+    tab[place.x][place.y]='S';
     a->ability.rock-=1;
     break;
   }

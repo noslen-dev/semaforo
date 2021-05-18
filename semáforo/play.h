@@ -21,11 +21,16 @@ struct player{
   struct plays ability;
 };
 
+struct coordinates{
+  int x,y;
+};
+
+
 void update_player(char **tab, int lin, int col,int turn ,struct player *a);
 void show_plays(struct player a);
 char ask_play(struct player a);
-int interpret_play(char **tab, int lin, int col, char play,int x, int y, struct player *a);
-void ask_place(int *x, int *y,int lin, int col);
+int interpret_play(char **tab, int lin, int col, char play,struct coordinates place, struct player *a);
+void ask_place(struct coordinates *place, int lin, int col);
 char **add_l_c(char ***tab, int *lin, int *col, char play, struct player *a);
 
 #endif

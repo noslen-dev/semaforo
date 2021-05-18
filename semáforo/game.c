@@ -103,19 +103,15 @@ char ** load_game(char **tab, int *lin, int *col, struct player *a, struct playe
 
 void game_2p(char *filename){
 char **tab,op=1;
-int lin,col,turn,x,y,k;
+int lin,col,turn,k;
+struct coordinates place;
 struct player a,b,*aux;
-struct d_list *sucessions;
 if(filename==NULL){
   init_player(&a, 'A'); init_player(&b,'B'); turn=1;
   if( (tab=create_tab(tab,&lin,&col))==NULL ){
     printf("Nao foi possivel criar o tabuleiro, o programa terminara\n");
     return ;
     }
-    if( (sucessions=create_list() )==NULL){
-      //
-    }
-      
   }
 else{
   if( (tab=load_game(tab,&lin,&col,&a,&b))==NULL ){ //load_tab, load players, load_list
@@ -138,8 +134,8 @@ while(check_victory(tab,lin,col,*aux)!=1 || check_tie(tab,lin,col,a,b)!=1){
  start: op=ask_play(*aux);
   if(op!='K' && op!='L' && op!='C' && op!='I') //carateres nao colocaveis
     do{
-      ask_place(&x,&y,lin,col);  
-    }while(interpret_play(tab,lin,col,op,x,y,aux)==1); 
+      ask_place(&place,lin,col);  
+    }while(interpret_play(tab,lin,col,op,place,aux)==1); 
   else
     if(op=='L' || op=='C'){
       if( add_l_c(&tab, &lin, &col,op,aux)==NULL)

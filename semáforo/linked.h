@@ -3,16 +3,28 @@
 
 #include "play.h"
 
-struct d_list{
-  int lin,col,turn;
-  struct player a; //jogador que fez a ultima jogada
-  char piece; //ultima peca colocada pelo jogador
-  int x,y; //coordenadas em que essa peca foi inserida
-  struct d_list *prev,*next; 
+struct list_node{
+  int lin,col;
+  int turn;
+  char piece;
+  int x,y;
+  struct player a;
 };
 
-struct d_list * create_list();
-struct d_list * add_node(struct d_list *curr);
+struct list_head{
+  char **tab;
+  int lin,col;
+  int turn;
+  char piece;
+  int x,y;
+  struct player a;
+  struct lis_node *next;
+};
+
+
+
+
+
 
 
 #endif
