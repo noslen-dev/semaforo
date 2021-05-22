@@ -23,5 +23,7 @@ struct list_head{ //cabeca da lista, onde o tabuleiro inicial estara
 struct list_head * create_head(int lin, int col);
 bool add_node_in_head(struct list_head *head, int lin, int col, char name, char piece ,struct coordinates place);
 bool add_node_to_node(struct list_head *head,struct list_node *prev, int lin, int col, char name, char piece, struct coordinates place);
+bool reset_tab(struct list_head *head, struct list_node *curr);
 bool show_k_prev(int k,struct list_head *head, struct list_node *end);
+bool place_piece(struct list_head *head,struct list_node curr);
 #endif

@@ -35,13 +35,13 @@ free(head); //limpa a cabeca
 }
 
 /***
- * static bool reset_tab(cabeca da lista, ultimo no)
+ * bool reset_tab(cabeca da lista, ultimo no)
  * Faz com que o "tab" presente em head, volte ao estado em que estava antes de
  * comecar o jogo.
  * Se uma alocacao falhar limpa a lista e devolve 0
  * Se tudo correr bem devolve .
  */ 
-static bool reset_tab(struct list_head *head, struct list_node *curr){
+bool reset_tab(struct list_head *head, struct list_node *curr){
 char **aux;
 if( ( aux=create_tab_fixed_lc(head->lin,head->col) )==NULL ){ //resetar a cabeca
   fprintf(stderr,ALLOCATION_ERROR_LINKED);

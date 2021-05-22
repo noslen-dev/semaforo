@@ -6,6 +6,7 @@
 #include "tab.h"
 #include "play.h"
 #include "linked.h"
+#include "files.h"
 
 
 /*********
@@ -176,6 +177,13 @@ while(check_victory(tab,lin,col,*aux)!=1 || check_tie(tab,lin,col,a,b)!=1){
     }
   ++turn;
   }
+//final do jogo
+free_tab(tab,lin); //apagar o tabuleiro
+if( reset_tab(states,curr)==0 ){
+  fprintf(stderr,"Erro ao exportar os estados do tabuleiro para um ficheiro\n");
+  return ; //a lista ja esta limpa
+}
+export_states_txt(states);
 }
 
 
