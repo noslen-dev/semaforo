@@ -9,7 +9,7 @@
  * void free_tab(tabuleiro de jogo, numero de linhas)
  * Liberta um tabuleiro de jogo
  ***************/
-static void free_tab(char **tab, int lin){
+void free_tab(char **tab, int lin){
 int i;
 for(i=0; i<lin; ++i)
   free(tab[i]);
@@ -49,7 +49,7 @@ for(i=0; i<lin; ++i)
 }
 
 /*************
- *  char **create_tab(tabuleiro de jogo, numero de linhas, numero de colunas)
+ *  char **create_tab(numero de linhas, numero de colunas)
  *  Cria um tabuleiro de jogo, com um numero aleatorio entre [3,5] de linhas.
  *  Aloca espaço de tal forma, que "tabuleiro" fica a apontar para um array dinamico
  *  de char * que apontam para um array dinamico de char em que cada um deles(array de char)
@@ -59,7 +59,8 @@ for(i=0; i<lin; ++i)
  *  devolve o tabuleiro e altera o numero de linhas e colunas.
  *  Limpa a memoria antes de retornar NULL.
  ***************/
-char **create_tab(char **tab, int *lin, int *col){
+char **create_tab(int *lin, int *col){
+char **tab;
 int i;
 initRandom();
 *lin=*col=intUniformRnd(3,5);
@@ -229,4 +230,31 @@ for(i=0,j=lin-1; i<lin-1 ; ++i,--j)
 return 1;
 }
 
+
+/*************
+ *  char **create_tab_fixed_lc(numero de linhas, numero de colunas)
+ *  Faz o mesmo que a funcao "create tab" mas em vez de criar um tabuleiro
+ *  como um numero aleatorio de linhas, crias um tabuleiro com as dimensoes
+ *  que recebeu como parametros
+ ***************/
+char **create_tab_fixed_lc(int lin, int col){
+char **tab;
+int i;
+if( (tab=malloc(sizeof(char *)* lin))==NULL ){
+  printf("Erro ao alocar espaço para o tabuleiro\n");
+  fprintf(stderr,ALLOCATION_ERROR);
+  return NULL;
+}
+for(i=0; i<lin; ++i)
+  if( ( tab[i]=(char *)malloc(sizeof(char)* lin) )==NULL ){
+     printf("Erro ao alocar espaço para o tabuleiro\n");
+     fprintf(stderr,ALLOCATION_ERROR);
+     while(--i && i>=0)
+       free(tab[i]);
+     free(tab);
+     return NULL;
+  }
+init_tab(tab,lin,col);
+return tab;
+}
 

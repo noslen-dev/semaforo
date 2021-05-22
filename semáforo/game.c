@@ -102,13 +102,15 @@ char ** load_game(char **tab, int *lin, int *col, struct player *a, struct playe
 
 
 void game_2p(char *filename){
-char **tab,op=1;
+char **tab,op=1,temp=1;
 int lin,col,turn,k;
 struct coordinates place;
 struct player a,b,*aux;
-if(filename==NULL){
+struct list_head *states; //linked list com os estados do jogo
+struct list_node *curr; //nos da lista
+if(filename==NULL){ //e para comecar um jogo novo
   init_player(&a, 'A'); init_player(&b,'B'); turn=1;
-  if( (tab=create_tab(tab,&lin,&col))==NULL ){
+  if( (tab=create_tab(&lin,&col))==NULL ){
     printf("Nao foi possivel criar o tabuleiro, o programa terminara\n");
     return ;
     }
@@ -124,14 +126,14 @@ while(check_victory(tab,lin,col,*aux)!=1 || check_tie(tab,lin,col,a,b)!=1){
   printf("Turno %d, vez do jogador %c\n\n",turn,turn%2==0 ? 'B' : 'A'); //impares B, pares A
   if(turn%2==0){
     aux=&b;
-  }
+    }
   else{
     aux=&a;
-  }
+    }
   draw_tab(tab,lin,col);
   update_player(tab,lin,col,turn,aux);
   show_plays(*aux);
- start: op=ask_play(*aux);
+  op=ask_play(*aux);
   if(op!='K' && op!='L' && op!='C' && op!='I') //carateres nao colocaveis
     do{
       ask_place(&place,lin,col);  
@@ -141,10 +143,19 @@ while(check_victory(tab,lin,col,*aux)!=1 || check_tie(tab,lin,col,a,b)!=1){
       if( add_l_c(&tab, &lin, &col,op,aux)==NULL)
         return ;
       }
-    else{ //K e I
-      printf("Escolheu carateres especiais\n");
-      goto start;
-    }
-  ++turn;
+    else//K e I
+      if(op=='K'){
+        printf("Escolheu carateres especiais\n\n");
+        continue;
+        }
+      else{ //I
+        printf("O jogo ira terminar\n");
+        return ;
+      }
+  ++turn;   
   }
 }
+
+
+
+
