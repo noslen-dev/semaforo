@@ -3,7 +3,7 @@
 
 #include "linked.h"
 
-void export_states_txt(struct list_head *states);
+bool export_states_txt(struct list_head *states);
 
 
 #endif

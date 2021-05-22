@@ -20,11 +20,11 @@ free(head);
 
 
 /****
- * static void free_list_and_tab(cabeca da lista, numero de linhas do tabuleiro atual)
+ * void free_list_and_tab(cabeca da lista, numero de linhas do tabuleiro atual)
  * Limpa todos os nos da lista e limpa a cabeca e o seu tabuleiro
  * Liberta a lista por completo
  */ 
-static void free_list_and_tab(struct list_head *head, int lin){
+void free_list_and_tab(struct list_head *head, int lin){
 struct list_node *ptr, *next;
 for(ptr=next=head->next; ptr!=NULL; ptr=next){ //limpa os nos
   next=ptr->next;

@@ -184,6 +184,7 @@ if( reset_tab(states,curr)==0 ){
   return ; //a lista ja esta limpa
 }
 export_states_txt(states);
+free_list_and_tab(states,curr->lin); //libertar a lista
 }
 
 

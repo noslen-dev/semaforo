@@ -1,10 +1,21 @@
 #include <stdio.h>
+#include <string.h>
+#include <stdbool.h>
 #include "files.h"
 #include "tab.h"
 
-void ask_filename(char *filename){
-printf("\nDigite o nome do ficheiro em que quer que o seu jogo seja guardado: ");
-scanf("%[^\n]",filename);
+
+/**
+ * static void ask_filename(string em que o nome do ficheiro sera guardado)
+ * Pede ao utilizador para introduzir um nome para o ficheiro em que serao
+ * guardados os estados do tabuleiro.
+ * Le no maximo 10 carateres e coloca .txt no final.
+ */
+static void ask_filename(char *filename){
+printf("\nDigite o nome do ficheiro em que quer que o seu jogo seja guardado\n"
+"Insira um nome com 10 carateres no maximo: ");
+scanf("%10[^\n]",filename);
+strcat(filename,".txt");
 }
 
 
@@ -18,7 +29,7 @@ static void write_info_to_file(struct list_node curr, FILE *fp){
 fprintf(fp,"Turno %d\n",curr.turn);
 fprintf(fp,"O jogador %c ",curr.player_name);
 if(curr.piece!='L' && curr.piece!='C')
-  fprintf(fp,"colocou a peca %c na posicao %d %d\n",curr.piece,curr.place.x,curr.place.y);
+  fprintf(fp,"colocou a peca %c na posicao %d %d\n\n",curr.piece,curr.place.x,curr.place.y);
 else
   fprintf(fp,"adicionou uma %s\n",curr.piece=='C' ? "coluna": "linha");
 }
@@ -53,25 +64,31 @@ for(i=0; i<col; ++i)
 }
 
 
-
-void export_states_txt(struct list_head *states){
-char filename[10];
+/***
+ * bool export_states_txt(cabeca da lista que contem os estados do tabuleiro)
+ * Cria um ficheiro .txt com um nome indicado pelo utilizador e escreve nesse 
+ * ficheiro a sucessao de estados do tabuleiro.
+ * Devolve 1 se consegui abrir o ficheiro.
+ * Devolve 0 caso contrario.
+ */
+bool export_states_txt(struct list_head *states){
+char filename[15];
 FILE *fp;
 struct list_node *curr;
 ask_filename(filename); //pedir o nome do ficheiro
 if( ( fp=fopen(filename,"w") )==NULL ){
   fprintf(stderr,"Erro ao criar o ficheiro de nome %s\n",filename);
-  return ;
+  return 0;
   }
 for(curr=states->next; curr!=NULL; curr=curr->next){
   write_info_to_file(*curr,fp);
   place_piece(states,*curr);
   draw_tab_to_file(states->tab,curr->lin,curr->col,fp);
   if(curr->next!=NULL) 
-    fprintf(fp,"\n-----------------------------------------------\n");
+    fprintf(fp,"\n\n-----------------------------------------------\n\n");
   else //estamos no ultimo turno == vitoria
-    fprintf(fp,"\n\nFim do jogo, vitoria do jogador %c\n",curr->player_name);
-    
+    fprintf(fp,"\n\nFim do jogo, vitoria do jogador %c",curr->player_name);
   }
 fclose(fp);
+return 1;
 }
