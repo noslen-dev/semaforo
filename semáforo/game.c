@@ -161,11 +161,17 @@ while(check_victory(tab,lin,col,*aux)!=1 || check_tie(tab,lin,col,a,b)!=1){
       }
   //operacoes na linked list
   if(turn==1){//criar o primeiro no
-    add_node_in_head(states,lin,col,aux->name,op,place); 
+    if(add_node_in_head(states,lin,col,aux->name,op,place)==0 ) {
+      free_tab(tab,lin); //a lista ja esta limpa
+      return ;
+    }
     curr=states->next;
   }
   else{ //estamos em qualquer outro turno
-    add_node_to_node(states,curr,lin,col,aux->name,op,place);
+    if(add_node_to_node(states,curr,lin,col,aux->name,op,place)==0 ){
+      free_tab(tab,lin); //a lista ja esta limpa
+      return ;
+    }
     curr=curr->next;
     }
   ++turn;

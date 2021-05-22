@@ -99,12 +99,12 @@ return new_head;
  * Este no representa o turno 1.
  * Devolve NULL em caso de erro e o novo no em caso de sucesso.
  */ 
-struct list_node * add_node_in_head(struct list_head *head, int lin, int col, char name, char piece ,struct coordinates place){
+bool add_node_in_head(struct list_head *head, int lin, int col, char name, char piece ,struct coordinates place){
 struct list_node * new_node;
 if( ( new_node=malloc(sizeof(struct list_node)) )==NULL ){
   fprintf(stderr,ALLOCATION_ERROR_LINKED);
   free_list_and_tab(head,head->lin); //liberta head e o seu tabuleiro
-  return NULL;
+  return 0;
   }
 new_node->lin=lin; new_node->col=col;
 new_node->player_name=name;
@@ -115,7 +115,7 @@ new_node->turn=1; //sempre o turno 1
 head->next=new_node;
 new_node->next=NULL;
 
-return new_node; //indica sucesso
+return 1; //indica sucesso
 }
 
 
