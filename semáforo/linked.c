@@ -44,7 +44,7 @@ free(head); //limpa a cabeca
 static bool reset_tab(struct list_head *head, struct list_node *curr){
 char **aux;
 if( ( aux=create_tab_fixed_lc(head->lin,head->col) )==NULL ){ //resetar a cabeca
-  fprintf(stderr,"Erro ao criar a sucessao dos estados\n");
+  fprintf(stderr,ALLOCATION_ERROR_LINKED);
   free_list_and_tab(head,curr->lin); //as linhas podem ter sido alteradas
   return 0;
   }
@@ -78,11 +78,11 @@ else
 struct list_head * create_head(int lin, int col){
 struct list_head * new_head;
 if( ( new_head=malloc(sizeof(struct list_head)) )==NULL ){
-  fprintf(stderr,"Erro ao criar a sucessao dos estados\n");
+  fprintf(stderr,ALLOCATION_ERROR_LINKED);
   return NULL;
   }
 if( ( new_head->tab=create_tab_fixed_lc(lin,col) )==NULL ){
-  fprintf(stderr,"Erro ao criar a sucessao dos estados\n");
+  fprintf(stderr,ALLOCATION_ERROR_LINKED);
   free(new_head);
   return NULL;
   }
@@ -102,7 +102,7 @@ return new_head;
 struct list_node * add_node_in_head(struct list_head *head, int lin, int col, char name, char piece ,struct coordinates place){
 struct list_node * new_node;
 if( ( new_node=malloc(sizeof(struct list_node)) )==NULL ){
-  fprintf(stderr,"Erro ao criar a sucessao dos estados\n");
+  fprintf(stderr,ALLOCATION_ERROR_LINKED);
   free_list_and_tab(head,head->lin); //liberta head e o seu tabuleiro
   return NULL;
   }
@@ -130,7 +130,7 @@ return new_node; //indica sucesso
 bool add_node_to_node(struct list_head *head,struct list_node *prev, int lin, int col, char name, char piece, struct coordinates place){
 struct list_node * new_node;
 if( ( new_node=malloc(sizeof(struct list_node)) )==NULL ){
-  fprintf(stderr,"Erro ao criar a sucessao dos estados\n");
+  fprintf(stderr,ALLOCATION_ERROR_LINKED);
   free_list_and_tab(head,prev->lin); //o tabuleiro atual pode ter as linhas aumentadas
   return 0;
   }
@@ -164,7 +164,7 @@ else //inserir linha ou coluna
   if(curr.piece=='C'){
     --curr.col; // o numero ja esta certo
     if( ( add_col(head->tab,curr.lin,&curr.col) )==NULL ){
-      fprintf(stderr,"Erro ao criar a sucessao dos estados\n");
+      fprintf(stderr,ALLOCATION_ERROR_LINKED);
       free_list(head); //libertar a lista, o tabuleiro ja esta limpo
       return 0;
       }
@@ -172,7 +172,7 @@ else //inserir linha ou coluna
   else{
     --curr.lin; //o numero ja esta certo
     if( (head->tab=add_lin(head->tab,&curr.lin,curr.col) )==NULL ){
-      fprintf(stderr,"Erro ao criar a sucessao dos estados\n");
+      fprintf(stderr,ALLOCATION_ERROR_LINKED);
       free_list(head); //libertar a lista, o tabuleiro ja esta limpo
       return 0;
       }

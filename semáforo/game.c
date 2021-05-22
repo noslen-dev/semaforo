@@ -110,8 +110,11 @@ struct list_head *states; //linked list com os estados do jogo
 struct list_node *curr; //nos da lista
 if(filename==NULL){ //e para comecar um jogo novo
   init_player(&a, 'A'); init_player(&b,'B'); turn=1;
-  if( (tab=create_tab(&lin,&col))==NULL ){
-    printf("Nao foi possivel criar o tabuleiro, o programa terminara\n");
+  if( (tab=create_tab(&lin,&col))==NULL )
+    return ;
+
+  if( ( states=create_head(lin,col) )==NULL   ){//criar linked list
+    free_tab(tab,lin);
     return ;
     }
   }
@@ -145,14 +148,27 @@ while(check_victory(tab,lin,col,*aux)!=1 || check_tie(tab,lin,col,a,b)!=1){
       }
     else//K e I
       if(op=='K'){
-        printf("Escolheu carateres especiais\n\n");
+        k=get_k(turn);
+        printf("As %d jogadas anteriores foram: \n",k);
+        show_k_prev(k,states,curr);
+        printf("Pressione qualquer tecla para voltar ao jogo: ");
+        scanf("*%c");
         continue;
         }
       else{ //I
         printf("O jogo ira terminar\n");
         return ;
       }
-  ++turn;   
+  //operacoes na linked list
+  if(turn==1){//criar o primeiro no
+    add_node_in_head(states,lin,col,aux->name,op,place); 
+    curr=states->next;
+  }
+  else{ //estamos em qualquer outro turno
+    add_node_to_node(states,curr,lin,col,aux->name,op,place);
+    curr=curr->next;
+    }
+  ++turn;
   }
 }
 
