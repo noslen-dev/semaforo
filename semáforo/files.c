@@ -95,14 +95,19 @@ return 1;
 
 
 /**
- * bool export_states_bin(cabeca da lista que contem os estados do tabuleiro)
- * Escreve os dois jogadores do jogo no ficheiro apontado por fp.
- * Escreve a lista com as sucessoes do tabuleiro num ficheiro binario de nome
- * "jogo.bin".
+ * bool export_states_bin(cabeca da lista que contem os estados do tabuleiro, jogador a, jogador b,
+ * numero de linhas iniciais, numero de colunas iniciais, modo de jogo)
+ * Escreve no ficheiro toda a informacao necessaria para retomar um jogo.
+ * A disposicao do ficheiro e a seguinte:
+ * 
+ * |************************************************************************|
+ * |modo de jogo | jogador a | jogador b | linhas iniciais| colunas iniciais|
+ * |lista com as sucessoes do tabuleiro(exeto a cabeca)                     |
+ * |************************************************************************
  * Devolve 1 se o ficheiro foi criado com sucesso.
  * Devolve 0 se o ficheiro nao pode ser criado
  */ 
-bool export_states_bin(struct list_head states, struct player a, struct player b, int lin, int col){
+bool export_bin(struct list_head states, struct player a, struct player b, int lin, int col, bool game_mode){
 FILE *fp;
 if( (fp=fopen("jogo.bin","wb"))==NULL ){
    fprintf(stderr,"Erro ao criar o ficheiro que iria guardar o jogo\n");
@@ -110,6 +115,7 @@ if( (fp=fopen("jogo.bin","wb"))==NULL ){
   }
 struct list_node *curr;
 //escrever os jogadores e as dimensoes do tabuleiro no inicio do ficheiro
+fwrite(&game_mode,sizeof(bool),1,fp);
 fwrite(&a,sizeof(struct player),1,fp);
 fwrite(&b,sizeof(struct player),1,fp);
 fwrite(&lin,sizeof(int),1,fp);
@@ -121,3 +127,5 @@ for(curr=states.next; curr!=NULL; curr=curr->next){
 fclose(fp);
 return 1; //sucesso
 }
+
+

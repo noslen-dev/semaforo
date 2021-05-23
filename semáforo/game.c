@@ -9,6 +9,10 @@
 #include "files.h"
 
 
+
+
+
+
 /*********
  * init_player(jogador a ser inicializado)
  * incializa as "abilidades especiais" do seu argumento
@@ -108,6 +112,78 @@ if(*piece!='K' && *piece!='L' && *piece!='C' && *piece!='I') //carateres nao col
 
 
 
+/****
+ * static bool load_players(jogador a, jogador b)
+ * Abre o ficheiro "jogo.bin" e escreve e carrega os jogadores apontados por "a" e "b"
+ * com os valores que tinham quando o jogo foi interrompido
+ * Devolve 1 em caso de sucesso.
+ * Devolve 0 em caso de erro.
+ */
+static bool load_players(struct player *a , struct player *b){
+FILE *fp;
+if( ( fp=fopen("jogo.bin","rb") )==NULL ){
+  printf("Nao foi possivel abrir o ficheiro que continha informacao para retomar o jogo\n");
+  return 0;
+  }
+fseek(fp,sizeof(bool),SEEK_SET); //saltar o game_mode
+fread(a,sizeof(struct player),1,fp);
+fread(b,sizeof(struct player),1,fp);
+fclose(fp);
+return 1;
+}
+
+
+
+
+/***
+ * static bool load_tab_list(tabuleiro de jogo, numero de linhas, numero de colunas,
+ * lista ligada com os estados do tabuleiro)
+ * Abre o ficheiro "jogo.bin" e repoe o tabuleiro de jogo, as suas dimensoes, a lista ligada que contem
+ * os estados do jogo, e o ponteiro que na funcao "game" aponta para o no "turn",
+ * ao estado em que estavam antes de o jogo ser interrompido.
+ * Devolve 1 em caso de sucesso.
+ * Devolve 0 em caso de erro.
+ */ 
+static bool load_tab_list(char ***tab, int *lin, int *col, int *turn, struct list_head **states, struct list_node **end){
+struct list_node temp, *curr;
+FILE *fp;
+if( ( fp=fopen("jogo.bin","rb") )==NULL ){
+  printf("Nao foi possivel abrir o ficheiro que continha informacao para retomar o jogo\n");
+  return 0;
+  }
+//saltar o que nao interessa
+fseek(fp,sizeof(bool),SEEK_SET); fseek(fp,sizeof(struct player),SEEK_CUR); fseek(fp,sizeof(struct player),SEEK_CUR);
+fread(lin,sizeof(int),1,fp); fread(col,sizeof(int),1,fp);
+
+if ( ( *states=create_head(*lin,*col) )==NULL ){
+  printf("O programa terminara\n");
+  return 0;
+  }
+fread(&temp,sizeof(struct list_node),1,fp);
+add_node_in_head(*states,temp.lin,temp.col,temp.player_name,temp.piece,temp.place);
+curr=(*states)->next;
+place_piece(*states,*curr);
+
+while( fread(&temp,sizeof(struct list_node),1,fp) ==1 ){
+  add_node_to_node(*states,curr,temp.lin,temp.col,temp.player_name,temp.piece,temp.place);
+  curr=curr->next; 
+  place_piece(*states,*curr); 
+  }
+
+*lin=curr->lin; *col=curr->col; *turn=curr->turn+1;
+*end=curr;//atualizar o turno da lista
+
+*tab=create_tab_fixed_lc(*lin,*col);
+tab_copy( (*states)->tab,*tab,*lin,*col);
+if(reset_tab(*states,curr)==0 ){
+  printf("O programa ira terminar\n");
+  return 0;
+  }
+
+return 1;
+}
+
+
 
 
 
@@ -118,8 +194,11 @@ struct coordinates place;
 struct player a,b,*aux;
 struct list_head *states; 
 struct list_node *curr; 
-if(resume==1)
-  ;//load_game(); carrega as componentes do jogo
+if(resume==1){
+  load_players(&a,&b);
+  load_tab_list(&tab,&lin,&col,&k,&states,&curr);
+  turn=k;
+  }
 else{ //comecar jogo do zero
   if( ( tab=create_tab(&lin,&col) )==NULL ){
     printf("O programa terminara\n");
@@ -163,9 +242,9 @@ while(check_victory(tab,lin,col,*aux)!=1 || check_tie(tab,lin,col,a,b)!=1){
       if(piece=='I'){
         printf("O jogo ira terminar mas sera guardado num ficheiro para o poder continuar\n"
         "posteriormente\n");
-        export_states_bin(*states,a,b,states->lin,states->col);//lin e col iniciais
+        export_bin(*states,a,b,states->lin,states->col,game_mode);//lin e col iniciais
         free_tab(tab,lin);
-        free_list_and_tab(states,curr->lin);
+        free_list_and_tab(states,curr->lin); 
         return ;
         }
   //operacoes na linked list
@@ -187,6 +266,7 @@ while(check_victory(tab,lin,col,*aux)!=1 || check_tie(tab,lin,col,a,b)!=1){
   }
 //fim do jogo
 free_tab(tab,lin); //apagar o tabuleiro
+
 if( reset_tab(states,curr)==0 ){
   fprintf(stderr,"Erro ao exportar os estados do tabuleiro para um ficheiro\n");
   return ; //a lista ja esta limpa

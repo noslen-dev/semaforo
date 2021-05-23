@@ -241,7 +241,7 @@ char **create_tab_fixed_lc(int lin, int col){
 char **tab;
 int i;
 if( (tab=malloc(sizeof(char *)* lin))==NULL ){
-  printf("Erro ao alocar espaço para o tabuleiro\n");
+  printf("Erro ao alocar espaco para o tabuleiro\n");
   fprintf(stderr,ALLOCATION_ERROR);
   return NULL;
 }

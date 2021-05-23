@@ -20,7 +20,7 @@ if( ( fp=fopen("jogo.bin","rb") )!=NULL ){
   "S (sim) ou N(nao)");
   do{
     printf("Opcao: ");
-    scanf(" %c",op);
+    scanf(" %c",&op);
     if(op!='S' && op!='N'){
       printf("Por favor digite ou S(sim) ou N(nao)\n");
       clean_stdin();
