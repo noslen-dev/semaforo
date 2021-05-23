@@ -97,7 +97,7 @@ return op;
 
 
 
-void game_2p(int game_mode){
+void game(bool game_mode, bool resume){
 char **tab,op=1;
 int lin,col,turn,k;
 struct coordinates place;
@@ -109,7 +109,7 @@ if(game_mode==1){ //e para comecar um jogo novo
   if( (tab=create_tab(&lin,&col))==NULL )
     return ;
 
-  if( ( states=create_head(lin,col) )==NULL   ){//criar linked list
+  if( ( states=create_head(lin,col,game_mode) )==NULL   ){//criar linked list
     free_tab(tab,lin);
     return ;
     }
@@ -123,12 +123,12 @@ else{ //continuar jogo
 //inicio efetivo do jogo
 while(check_victory(tab,lin,col,*aux)!=1 || check_tie(tab,lin,col,a,b)!=1){
   printf("Turno %d, vez do jogador %c\n\n",turn,turn%2==0 ? 'B' : 'A'); //impares B, pares A
-  if(turn%2==0){
+  if(turn%2==0)
     aux=&b;
-    }
-  else{
+
+  else
     aux=&a;
-    }
+  
   draw_tab(tab,lin,col);
   update_player(tab,lin,col,turn,aux);
   show_plays(*aux);

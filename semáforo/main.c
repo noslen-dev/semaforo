@@ -11,7 +11,7 @@ int main(){
 char op;
 op=menu();
 if(op=='1')
-  game_2p(1);
+  game(1,1);
 
 
 return 0;

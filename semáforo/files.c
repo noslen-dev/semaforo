@@ -80,6 +80,7 @@ if( ( fp=fopen(filename,"w") )==NULL ){
   fprintf(stderr,"Erro ao criar o ficheiro de nome %s\n",filename);
   return 0;
   }
+fprintf(fp,"%s",states->game_mode==1 ? "Jogador A vs jogador B\n\n" : "Jogador A vs Jogador B(computador)\n\n");
 for(curr=states->next; curr!=NULL; curr=curr->next){
   write_info_to_file(*curr,fp);
   place_piece(states,*curr);
