@@ -95,80 +95,89 @@ do{
 return op;
 }
 
+void ask_player(char **tab, int lin, int col, struct coordinates *place, struct player *aux, int turn, char *piece){
+draw_tab(tab,lin,col);
+update_player(tab,lin,col,turn,aux);
+show_plays(*aux);
+*piece=ask_play(*aux);
+if(*piece!='K' && *piece!='L' && *piece!='C' && *piece!='I') //carateres nao colocaveis
+    do{
+      ask_place(place,lin,col);  
+    }while(interpret_play(tab,lin,col,*piece,*place,aux)==1);
+}
+
+
+
+
 
 
 void game(bool game_mode, bool resume){
-char **tab,op=1;
+char **tab,piece=1;
 int lin,col,turn,k;
 struct coordinates place;
 struct player a,b,*aux;
-struct list_head *states; //linked list com os estados do jogo
-struct list_node *curr; //nos da lista
-if(game_mode==0){ //e para comecar um jogo novo
-  init_player(&a, 'A'); init_player(&b,'B'); turn=1;
-  if( (tab=create_tab(&lin,&col))==NULL )
+struct list_head *states; 
+struct list_node *curr; 
+if(resume==1)
+  ;//load_game(); carrega as componentes do jogo
+else{ //comecar jogo do zero
+  if( ( tab=create_tab(&lin,&col) )==NULL ){
+    printf("O programa terminara\n");
     return ;
-
+    }
   if( ( states=create_head(lin,col) )==NULL   ){//criar linked list
     free_tab(tab,lin);
+    printf("O programa ira terminar");
     return ;
     }
+  init_player(&a,'A'); init_player(&b,'B'); turn=1;
   }
-else{ //continuar jogo
-  if( 1 /*( states=load_game(&tab,&lin,&col,&a,&b,&turn) )==NULL*/ ){ //load_tab, load players, load_list
-    printf("Nao foi possivel criar o tabuleiro, o programa terminara\n");
-    return ;
-    }
-  }
+
 //inicio efetivo do jogo
 while(check_victory(tab,lin,col,*aux)!=1 || check_tie(tab,lin,col,a,b)!=1){
   printf("Turno %d, vez do jogador %c\n\n",turn,turn%2==0 ? 'B' : 'A'); //impares B, pares A
-  if(turn%2==0)
+  if(turn%2==0){
     aux=&b;
-
-  else
+    if(game_mode==1)
+      ;//bot_plays
+    ask_player(tab,lin,col,&place,aux,turn,&piece);
+    }
+  else{
     aux=&a;
-  
-  draw_tab(tab,lin,col);
-  update_player(tab,lin,col,turn,aux);
-  show_plays(*aux);
-  op=ask_play(*aux);
-  if(op!='K' && op!='L' && op!='C' && op!='I') //carateres nao colocaveis
-    do{
-      ask_place(&place,lin,col);  
-    }while(interpret_play(tab,lin,col,op,place,aux)==1); 
-  else
-    if(op=='L' || op=='C'){
-      if( add_l_c(&tab, &lin, &col,op,aux)==NULL)
-        return ;
+    ask_player(tab,lin,col,&place,aux,turn,&piece);
+  }
+  if(piece=='L' || piece=='C'){
+    if( add_l_c(&tab, &lin, &col,piece,aux)==NULL)
+      return ;
+    }
+  else//K e I
+    if(piece=='K'){
+      k=get_k(turn);
+      printf("As %d jogadas anteriores foram: \n",k);
+      show_k_prev(k,states,curr);
+      printf("Pressione qualquer tecla para voltar ao jogo: ");
+      scanf("*%c");
+      continue;
       }
-    else//K e I
-      if(op=='K'){
-        k=get_k(turn);
-        printf("As %d jogadas anteriores foram: \n",k);
-        show_k_prev(k,states,curr);
-        printf("Pressione qualquer tecla para voltar ao jogo: ");
-        scanf("*%c");
-        continue;
-        }
-      else{ //I
+    else 
+      if(piece=='I'){
         printf("O jogo ira terminar mas sera guardado num ficheiro para o poder continuar\n"
         "posteriormente\n");
         export_states_bin(*states,a,b,states->lin,states->col);//lin e col iniciais
         free_tab(tab,lin);
         free_list_and_tab(states,curr->lin);
         return ;
-      }
+        }
   //operacoes na linked list
   if(turn==1){//criar o primeiro no
-    if(add_node_in_head(states,lin,col,aux->name,op,place)==0 ) {
+    if(add_node_in_head(states,lin,col,aux->name,piece,place)==0 ) {
       free_tab(tab,lin); //a lista ja esta limpa
       return ;
     }
     curr=states->next;
   }
   else{ //estamos em qualquer outro turno
-    if(add_node_to_node(states,curr,lin,col,aux->name,op,place)==0 ){
+    if(add_node_to_node(states,curr,lin,col,aux->name,piece,place)==0 ){
       free_tab(tab,lin); //a lista ja esta limpa
       return ;
     }
@@ -176,13 +185,13 @@ while(check_victory(tab,lin,col,*aux)!=1 || check_tie(tab,lin,col,a,b)!=1){
     }
   ++turn;
   }
-//final do jogo
+//fim do jogo
 free_tab(tab,lin); //apagar o tabuleiro
 if( reset_tab(states,curr)==0 ){
   fprintf(stderr,"Erro ao exportar os estados do tabuleiro para um ficheiro\n");
   return ; //a lista ja esta limpa
-}
+  }
 export_states_txt(states);
-free_list_and_tab(states,curr->lin); //libertar a lista
+free_list_and_tab(states,curr->lin);
 }
 
