@@ -96,20 +96,15 @@ return op;
 }
 
 
-char ** load_game(char **tab, int *lin, int *col, struct player *a, struct player *b){
 
-}
-
-
-
-void game_2p(char *filename){
-char **tab,op=1,temp=1;
+void game_2p(int game_mode){
+char **tab,op=1;
 int lin,col,turn,k;
 struct coordinates place;
 struct player a,b,*aux;
 struct list_head *states; //linked list com os estados do jogo
 struct list_node *curr; //nos da lista
-if(filename==NULL){ //e para comecar um jogo novo
+if(game_mode==1){ //e para comecar um jogo novo
   init_player(&a, 'A'); init_player(&b,'B'); turn=1;
   if( (tab=create_tab(&lin,&col))==NULL )
     return ;
@@ -119,8 +114,8 @@ if(filename==NULL){ //e para comecar um jogo novo
     return ;
     }
   }
-else{
-  if( (tab=load_game(tab,&lin,&col,&a,&b))==NULL ){ //load_tab, load players, load_list
+else{ //continuar jogo
+  if( 1 /*( states=load_game(&tab,&lin,&col,&a,&b,&turn) )==NULL*/ ){ //load_tab, load players, load_list
     printf("Nao foi possivel criar o tabuleiro, o programa terminara\n");
     return ;
     }
@@ -157,7 +152,11 @@ while(check_victory(tab,lin,col,*aux)!=1 || check_tie(tab,lin,col,a,b)!=1){
         continue;
         }
       else{ //I
-        printf("O jogo ira terminar\n");
+        printf("O jogo ira terminar mas sera guardado num ficheiro para o poder continuar\n"
+        "posteriormente\n");
+        export_states_bin(*states,a,b,states->lin,states->col);//lin e col iniciais
+        free_tab(tab,lin);
+        free_list_and_tab(states,curr->lin);
         return ;
       }
   //operacoes na linked list
@@ -186,7 +185,4 @@ if( reset_tab(states,curr)==0 ){
 export_states_txt(states);
 free_list_and_tab(states,curr->lin); //libertar a lista
 }
-
-
-
 

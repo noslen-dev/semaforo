@@ -3,7 +3,7 @@
 #include <stdbool.h>
 #include "files.h"
 #include "tab.h"
-
+#include "play.h"
 
 /**
  * static void ask_filename(string em que o nome do ficheiro sera guardado)
@@ -91,4 +91,33 @@ for(curr=states->next; curr!=NULL; curr=curr->next){
   }
 fclose(fp);
 return 1;
+}
+
+
+/**
+ * bool export_states_bin(cabeca da lista que contem os estados do tabuleiro)
+ * Escreve os dois jogadores do jogo no ficheiro apontado por fp.
+ * Escreve a lista com as sucessoes do tabuleiro num ficheiro binario de nome
+ * "jogo.bin".
+ * Devolve 1 se o ficheiro foi criado com sucesso.
+ * Devolve 0 se o ficheiro nao pode ser criado
+ */ 
+bool export_states_bin(struct list_head states, struct player a, struct player b, int lin, int col){
+FILE *fp;
+if( (fp=fopen("jogo.bin","wb"))==NULL ){
+   fprintf(stderr,"Erro ao criar o ficheiro que iria guardar o jogo\n");
+   return 0;
+  }
+struct list_node *curr;
+//escrever os jogadores e as dimensoes do tabuleiro no inicio do ficheiro
+fwrite(&a,sizeof(struct player),1,fp);
+fwrite(&b,sizeof(struct player),1,fp);
+fwrite(&lin,sizeof(int),1,fp);
+fwrite(&col,sizeof(int),1,fp);
+
+for(curr=states.next; curr!=NULL; curr=curr->next){
+  fwrite(curr,sizeof(struct list_node),1,fp);
+  }
+fclose(fp);
+return 1; //sucesso
 }

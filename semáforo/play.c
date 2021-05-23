@@ -57,16 +57,17 @@ if(turn>1)
  *********/ 
 void show_plays(struct player a){
 printf("\n\nAs jogadas que pode fazer sao:\n"
-"%s%s%s%s%s%s", a.ability.green==1 ? "Adicionar uma peca verde numa celula vazia (G)\n" : "\0",
+"%s%s%s",a.ability.green==1 ? "Adicionar uma peca verde numa celula vazia (G)\n" : "\0",
 a.ability.yellow==1 ? "Trocar uma peca verde por uma amarela (Y)\n" : "\0",
-a.ability.red==1 ? "Trocar uma peca amarela por uma vermelha (R)\n" : "\0",
-a.ability.rock!=0 ? "Colocar uma pedra numa celula vazia (S)\n" : "\0",
-a.ability.lc!=0 ? "Adicionar uma linha ou coluna (L || C)\n" : "\0",
-a.ability.k_interrupt!=0 ? "Ver as k jogadas anteriores(K)\n"
-"Interromper o jogo para ser ou nao retomado posteriormente(I)\n" : "\0");
+a.ability.red==1 ? "Trocar uma peca amarela por uma vermelha (R)\n" : "\0");
+if(a.ability.rock!=0)
+  printf("Colocar uma pedra numa celula vazia (S) (%d restantes)\n",a.ability.rock);
+if(a.ability.lc!=0)
+  printf("Adicionar uma linha ou coluna (L ou C) (%d restantes) \n",a.ability.lc);
+if(a.ability.k_interrupt!=0)
+  printf("Ver as k jogadas anteriores(K)\n"
+  "Interromper o jogo para ser ou nao retomado posteriormente(I)\n");
 }
-
-
 
 /**********
  *  int validate_play(jogador atual, carater pressionado pelo utilizador)
@@ -158,8 +159,6 @@ return play;
 }
 
 
-
-
 /*******
  * void ask_place(cordenadas de uma celula do tabuleiro, numero de linhas e colunas)
  * Obriga o utilizador a introduzir coordenadas dentro do tabuleiro e num formato valido
@@ -226,9 +225,6 @@ switch(play){
   }
 return 0;
 }
-
-
-
 
 
 /*******

@@ -72,7 +72,8 @@ else
 /*****
  * struct list_head *create_head(numero de linhas, numero de colunas)
  * Cria a cabeca de linked list que ira guardar os estados do tabuleiro.
- * Inicializa os menbros da cabeca.
+ * Inicializa os menbros da cabeca, faz o membro "tab" apontar ja para um
+ * tabuleiro de dimensao lin x col.
  * Devolve a cabeca.
  */ 
 struct list_head * create_head(int lin, int col){

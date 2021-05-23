@@ -258,3 +258,15 @@ init_tab(tab,lin,col);
 return tab;
 }
 
+
+/***
+ * void tab_copy(tabuleiro original, tabuleiro destino, numero de linhas, numero de colunas)
+ * Os tabuleiro tem de ter o mesmo numero de linhas e colunas.
+ * Copia dest para orig.
+ */ 
+void tab_copy(char **orig, char **dest, int lin, int col){
+int i,j;
+for(i=0; i<lin; ++i)
+  for(j=0; j<col; ++j)
+    dest[i][j]=orig[i][j];
+}
