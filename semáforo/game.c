@@ -104,12 +104,12 @@ struct coordinates place;
 struct player a,b,*aux;
 struct list_head *states; //linked list com os estados do jogo
 struct list_node *curr; //nos da lista
-if(game_mode==1){ //e para comecar um jogo novo
+if(game_mode==0){ //e para comecar um jogo novo
   init_player(&a, 'A'); init_player(&b,'B'); turn=1;
   if( (tab=create_tab(&lin,&col))==NULL )
     return ;
 
-  if( ( states=create_head(lin,col,game_mode) )==NULL   ){//criar linked list
+  if( ( states=create_head(lin,col) )==NULL   ){//criar linked list
     free_tab(tab,lin);
     return ;
     }

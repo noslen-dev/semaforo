@@ -74,11 +74,10 @@ else
  * Cria a cabeca de linked list que ira guardar os estados do tabuleiro.
  * Inicializa os menbros da cabeca, faz o membro "tab" apontar ja para um
  * tabuleiro de dimensao lin x col.
- * Inicializa tambem o membro "game_mode" com o mode de jogo em questao.
  * Devolve a cabeca em caso de sucesso.
  * Devolve NULL em caso de erro
  */ 
-struct list_head * create_head(int lin, int col, bool game_mode){
+struct list_head * create_head(int lin, int col){
 struct list_head * new_head;
 if( ( new_head=malloc(sizeof(struct list_head)) )==NULL ){
   fprintf(stderr,ALLOCATION_ERROR_LINKED);
@@ -89,7 +88,6 @@ if( ( new_head->tab=create_tab_fixed_lc(lin,col) )==NULL ){
   free(new_head);
   return NULL;
   }
-new_head->game_mode=game_mode;
 new_head->lin=lin; new_head->col=col;
 new_head->next=NULL;
 return new_head;
