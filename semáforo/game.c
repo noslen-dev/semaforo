@@ -7,6 +7,7 @@
 #include "play.h"
 #include "linked.h"
 #include "files.h"
+#include "bot.h"
 
 
 
@@ -99,17 +100,17 @@ do{
 return op;
 }
 
-void ask_player(char ***tab, int lin, int col, struct coordinates *place, struct player *aux, int turn, char *piece){
-draw_tab(*tab,lin,col);
-update_player(*tab,lin,col,turn,aux);
+void ask_player(char ***tab, int *lin, int *col, struct coordinates *place, struct player *aux, int turn, char *piece){
+draw_tab(*tab,*lin,*col);
+update_player(*tab,*lin,*col,turn,aux);
 show_plays(*aux);
 *piece=ask_play(*aux);
 if(*piece!='K' && *piece!='L' && *piece!='C' && *piece!='I') //carateres nao colocaveis
     do{
-      ask_place(place,lin,col);  
-    }while(interpret_play(*tab,lin,col,*piece,*place,aux)==1);
+      ask_place(place,*lin,*col);  
+    }while(interpret_play(*tab,*lin,*col,*piece,*place,aux)==1);
 if(*piece=='L' || *piece=='C')
-    if( add_l_c(tab, &lin, &col,*piece,aux)==NULL)
+    if( add_l_c(tab, lin, col,*piece,aux)==NULL)
       return ;
 }
 
@@ -229,11 +230,13 @@ while(check_victory(tab,lin,col,*aux)!=1 || check_tie(tab,lin,col,a,b)!=1){
   else
     aux=&a;
   
-  if(game_mode==1 && aux==&b) //vez do bot
-    ;//bot_plays;
+  if(game_mode==1 && aux==&b){ //vez do bot
+    bot_plays(&tab,&lin,&col,&piece,&place,aux);
+    show_bot_play(*aux,piece,place);
+    }
 
   else{ //jogador humano
-    ask_player(&tab,lin,col,&place,aux,turn,&piece);
+    ask_player(&tab,&lin,&col,&place,aux,turn,&piece);
     if(piece=='K'){
       show_k_prev_info(turn,states,curr);
       continue;
