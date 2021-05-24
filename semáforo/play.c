@@ -25,7 +25,7 @@ return place.x<=lin && place.x>=1 && place.y<=col && place.y>=1 ? 1 : 0;
 
 
 /**********
- * void play(tabuleiro do jogo, numero de linhas, numero de colunas, jogador atual)
+ * void update_player(tabuleiro do jogo, numero de linhas, numero de colunas, turno atual, jogador atual)
  * Percorre todo o tabuleiro e atualiza os membros da "struct plays" do "jogador a"
  * com um 0 ou 1
  * 0 indica que o jogador nao pode fazer essa jogada

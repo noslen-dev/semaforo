@@ -236,6 +236,8 @@ return 1;
  *  Faz o mesmo que a funcao "create tab" mas em vez de criar um tabuleiro
  *  como um numero aleatorio de linhas, crias um tabuleiro com as dimensoes
  *  que recebeu como parametros
+ *  Devolve tab, se tudo correu bem
+ *  Devolve NULL em caso de erro
  ***************/
 char **create_tab_fixed_lc(int lin, int col){
 char **tab;

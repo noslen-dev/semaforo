@@ -21,7 +21,3 @@ char ch;
   while( (ch=getchar() )!='\n' && ch!=EOF); //EOF so para ser seguro
 }
 
-void print_a(struct player a){
-  printf("\n%d %d %d %d %d\n",a.ability.green,a.ability.yellow,a.ability.red,
-  a.ability.rock,a.ability.lc);
-}

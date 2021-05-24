@@ -99,17 +99,19 @@ do{
 return op;
 }
 
-void ask_player(char **tab, int lin, int col, struct coordinates *place, struct player *aux, int turn, char *piece){
-draw_tab(tab,lin,col);
-update_player(tab,lin,col,turn,aux);
+void ask_player(char ***tab, int lin, int col, struct coordinates *place, struct player *aux, int turn, char *piece){
+draw_tab(*tab,lin,col);
+update_player(*tab,lin,col,turn,aux);
 show_plays(*aux);
 *piece=ask_play(*aux);
 if(*piece!='K' && *piece!='L' && *piece!='C' && *piece!='I') //carateres nao colocaveis
     do{
       ask_place(place,lin,col);  
-    }while(interpret_play(tab,lin,col,*piece,*place,aux)==1);
+    }while(interpret_play(*tab,lin,col,*piece,*place,aux)==1);
+if(*piece=='L' || *piece=='C')
+    if( add_l_c(tab, &lin, &col,*piece,aux)==NULL)
+      return ;
 }
-
 
 
 /****
@@ -184,7 +186,14 @@ return 1;
 }
 
 
-
+void show_k_prev_info(int turn, struct list_head *states, struct list_node *curr){
+int k;
+k=get_k(turn);
+printf("As %d jogadas anteriores foram: \n",k);
+show_k_prev(k,states,curr);
+printf("Pressione qualquer tecla para voltar ao jogo: ");
+scanf("*%c");
+}
 
 
 void game(bool game_mode, bool resume){
@@ -197,7 +206,7 @@ struct list_node *curr;
 if(resume==1){
   load_players(&a,&b);
   load_tab_list(&tab,&lin,&col,&k,&states,&curr);
-  turn=k;
+  turn=k; //?????
   }
 else{ //comecar jogo do zero
   if( ( tab=create_tab(&lin,&col) )==NULL ){
@@ -215,38 +224,30 @@ else{ //comecar jogo do zero
 //inicio efetivo do jogo
 while(check_victory(tab,lin,col,*aux)!=1 || check_tie(tab,lin,col,a,b)!=1){
   printf("Turno %d, vez do jogador %c\n\n",turn,turn%2==0 ? 'B' : 'A'); //impares B, pares A
-  if(turn%2==0){
+  if(turn%2==0)
     aux=&b;
-    if(game_mode==1)
-      ;//bot_plays
-    ask_player(tab,lin,col,&place,aux,turn,&piece);
-    }
-  else{
+  else
     aux=&a;
-    ask_player(tab,lin,col,&place,aux,turn,&piece);
-  }
-  if(piece=='L' || piece=='C'){
-    if( add_l_c(&tab, &lin, &col,piece,aux)==NULL)
-      return ;
-    }
-  else//K e I
+  
+  if(game_mode==1 && aux==&b) //vez do bot
+    ;//bot_plays;
+
+  else{ //jogador humano
+    ask_player(&tab,lin,col,&place,aux,turn,&piece);
     if(piece=='K'){
-      k=get_k(turn);
-      printf("As %d jogadas anteriores foram: \n",k);
-      show_k_prev(k,states,curr);
-      printf("Pressione qualquer tecla para voltar ao jogo: ");
-      scanf("*%c");
+      show_k_prev_info(turn,states,curr);
       continue;
       }
-    else 
-      if(piece=='I'){
-        printf("O jogo ira terminar mas sera guardado num ficheiro para o poder continuar\n"
-        "posteriormente\n");
-        export_bin(*states,a,b,states->lin,states->col,game_mode);//lin e col iniciais
-        free_tab(tab,lin);
-        free_list_and_tab(states,curr->lin); 
-        return ;
-        }
+    if(piece=='I'){
+      printf("O jogo ira terminar mas sera guardado num ficheiro para o poder continuar\n"
+      "posteriormente\n");
+      export_bin(*states,a,b,states->lin,states->col,game_mode);//lin e col iniciais
+      free_tab(tab,lin);
+      free_list_and_tab(states,curr->lin); 
+      return ;
+      }
+    }
+    
   //operacoes na linked list
   if(turn==1){//criar o primeiro no
     if(add_node_in_head(states,lin,col,aux->name,piece,place)==0 ) {

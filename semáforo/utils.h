@@ -15,6 +15,5 @@ int probEvento(float prob);
 
 void clean_stdin();
 
-void print_a(struct player a);
 
 #endif /* UTILS_H */
