@@ -3,6 +3,7 @@
 #include "utils.h"
 #include <stdio.h>
 
+
 /***
  * static void shuffle_arr(array de carateres, dimensao do array)
  * Baralha o array recebido
@@ -43,6 +44,14 @@ for(i=0; i<lin; ++i)
     }
 }
 
+void print_arr(char *arr, int dim){
+int i;
+printf("\n\n");
+for(i=0; i<dim; ++i)
+  printf("%c ",arr[i]);
+printf("\n\n");
+}
+
 /**
  * static char choose_play(jogador automatico)
  * Analisa as habilidades do jogador, e constroi um array de carateres em que cada carater representa
@@ -67,9 +76,7 @@ if(bot.ability.lc!=0){
 }
 if(bot.ability.rock!=0)
   play_arr[i++]='S';
-
 shuffle_arr(play_arr,i);
-print_arr(play_arr,i);
 return play_arr[0];
 }
 
@@ -126,11 +133,11 @@ int i,j,cnt=0;
 for(i=0; i<lin; ++i)
   for(j=0; j<col; ++j)
     if(tab[i][j]==replace_piece){
-      ++cnt ;   
+      ++cnt;   
       if(cnt==n_piece){
         place->x=i;
         place->y=j;
-        break;
+        return ;
         } 
       }
 }
@@ -146,10 +153,10 @@ int n_piece;
 char replace_piece;
 update_bot(*tab,*lin,*col,bot);
 *piece=choose_play(*bot);
+//!!!!!!!!!!!!!!
 if(*piece!='L' && *piece!='C'){
   n_piece=interpret_piece(*tab, *lin, *col, *piece,&replace_piece);
-  n_piece=intUniformRnd(1,n_piece); 
-  update_coord(*tab, *lin, *col, n_piece, replace_piece, place);
+  update_coord(*tab, *lin, *col, replace_piece, n_piece, place);
   (*tab)[place->x][place->y]=*piece;
   if(*piece=='S')
     bot->ability.rock-=1;
