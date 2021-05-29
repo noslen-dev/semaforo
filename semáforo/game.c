@@ -50,7 +50,7 @@ return 0;
  * Devolve 0 se nao houve empate
  */ 
 static bool check_tie(char **tab, int lin, int col, struct player a, struct player b){
-update_player(tab,lin,col,0,&a);
+update_player(tab,lin,col,0,&a); update_player(tab,lin,col,0,&b);
 return a.ability.green+a.ability.red+a.ability.yellow+a.ability.lc+
 b.ability.green+b.ability.red+b.ability.yellow+b.ability.lc;
 }
