@@ -208,7 +208,7 @@ struct coordinates place;
 struct player a,b,*aux;
 struct list_head *states; 
 struct list_node *curr; 
-if(resume==1){
+if(resume==RESUME_GAME){
   load_players(&a,&b);
   turn=load_tab_list(&tab,&lin,&col,&states,&curr);
   }
@@ -233,12 +233,12 @@ while(check_victory(tab,lin,col,*aux)!=1 || check_tie(tab,lin,col,a,b)!=1){
   else
     aux=&a;
   
-  if(game_mode==1 && aux==&b){ //vez do bot
+  if(game_mode==BOT_GAME && aux==&b){ //vez do bot
     bot_plays(&tab,&lin,&col,&piece,&place,aux);
     show_bot_play(*aux,piece,place);
     draw_tab(tab,lin,col);
     printf("\n\nPrima a tecla ENTER para fazer a sua jogada ");
-    scanf("*%[^\n]");
+    clean_stdin();
     }
 
   else{ //jogador humano

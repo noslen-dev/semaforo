@@ -3,11 +3,6 @@
 #include "utils.h"
 #include "game.h"
 
-//game_mode==0--> P1 vs P2
-//game_mode==1--> P1 vs PC
-
-//resume==1-->continuar jogo
-//resume==0-->comecar novo jogo
 
 
 int main(){
@@ -30,10 +25,10 @@ if( ( fp=fopen("jogo.bin","rb") )!=NULL ){
   if(op=='S'){
     fread(&game_mode,sizeof(bool),1,fp);
     fclose(fp);
-    if(game_mode==1) //contra computador
-      game(game_mode,1); //contra computador e resumir
+    if(game_mode==BOT_GAME) //contra computador
+      game(game_mode,RESUME_GAME); //contra computador e resumir
     else
-      game(game_mode,1); //dois jogadores, sem resumir
+      game(game_mode,RESUME_GAME); //dois jogadores, continuar
     }
   else{ //oopcao==N
     fclose(fp);
@@ -43,9 +38,9 @@ if( ( fp=fopen("jogo.bin","rb") )!=NULL ){
 if(op=='N'){ //se nao ha ficheiro ou nao quer continuar o jogo
   op=menu();
   if(op=='1')
-    game(0,0); //dois jogadores sem continuacao
+    game(TWO_PLAYER_GAME,NEW_GAME); //dois jogadores sem continuacao
   else
-    game(1,0); //computador sem resumir
+    game(BOT_GAME,NEW_GAME); //computador sem resumir
   }
 printf("\n\nObrigado por jogar o jogo do semaforo!!!\n\n");
 return 0;
