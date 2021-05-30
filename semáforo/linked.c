@@ -21,11 +21,11 @@ free(head);
 
 
 /****
- * void free_tab_in_head(cabeca da lista, numero de linhas do tabuleiro atual)
+ * void free_head_and_tab_in_head(cabeca da lista, numero de linhas do tabuleiro atual)
  * Limpa todos os nos da lista e limpa a cabeca e o seu tabuleiro
  * Liberta a lista por completo
  */ 
-void free_tab_in_head(struct list_head *head, int lin){
+void free_head_and_tab_in_head(struct list_head *head, int lin){
 struct list_node *curr, *next;
 for(curr=next=head->next; curr!=NULL; curr=next){ //limpa os nos
   next=curr->next;
@@ -46,7 +46,7 @@ bool reset_tab_in_head(struct list_head *head, struct list_node *curr){
 char **aux;
 if( ( aux=create_tab_fixed_lc(head->lin,head->col) )==NULL ){ //resetar a cabeca
   fprintf(stderr,ALLOCATION_ERROR_LINKED);
-  free_tab_in_head(head,curr->lin); //a dimensao do tabuleiro pode ter sido alterada, precisamos de passar as linhas atuais
+  free_head_and_tab_in_head(head,curr->lin); //a dimensao do tabuleiro pode ter sido alterada, precisamos de passar as linhas atuais
   return 0;
   }
 head->tab=aux;
@@ -106,7 +106,7 @@ bool add_node_in_head(struct list_head *head, int lin, int col, char name, char 
 struct list_node * new_node;
 if( ( new_node=malloc(sizeof(struct list_node)) )==NULL ){
   fprintf(stderr,ALLOCATION_ERROR_LINKED);
-  free_tab_in_head(head,head->lin); //liberta head e o seu tabuleiro
+  free_head_and_tab_in_head(head,head->lin); //liberta head e o seu tabuleiro
   return 0;
   }
 new_node->lin=lin; new_node->col=col;
@@ -134,7 +134,7 @@ bool add_node_to_node(struct list_head *head,struct list_node *prev, int lin, in
 struct list_node * new_node;
 if( ( new_node=malloc(sizeof(struct list_node)) )==NULL ){
   fprintf(stderr,ALLOCATION_ERROR_LINKED);
-  free_tab_in_head(head,prev->lin); //o tabuleiro atual pode ter as linhas aumentadas
+  free_head_and_tab_in_head(head,prev->lin); //o tabuleiro atual pode ter as linhas aumentadas
   return 0;
   }
 new_node->lin=lin; new_node->col=col;

@@ -12,13 +12,10 @@
 
 
 
-
-
 /*********
- * init_player(jogador a ser inicializado)
- * incializa as "abilidades especiais" do seu argumento
- * desnecessario inicializar o resto, pois a funcao "update_player" faz-lo
- * da tambem um nome ao jogador
+ * init_player(ponteiro para jogador, carater que representa o nome do jogador)
+ * Incializa as abilidades que nao dependem do estado do tabuleiro do jogador
+ * Da tambem um nome ao jogador
  */ 
 static void init_player(struct player *a, char name){
 a->ability.rock=a->ability.lc=2;
@@ -44,13 +41,15 @@ return 0;
 }
 
 /*********
- * check_tie(tabuleiro de jogo, numero de linhas, numero de colunas, jogadores)
+ * check_tie(tabuleiro de jogo, numero de linhas, numero de colunas, jogador a, jogador b)
  * Acede às habilidades do jogador 'a' e 'b' para determinar se houve um empate.
  * Devolve 1 e escreve uma mensagem seguida do tabuleiro em caso afirmativo
  * Devolve 0 se nao houve empate
  */ 
 static bool check_tie(char **tab, int lin, int col, struct player a, struct player b){
-update_player(tab,lin,col,0,&a); update_player(tab,lin,col,0,&b);
+//o ultimo jogador a jogar pode ter tornado impossivel continuar o jogo, logo precisamos
+//de atualizar os dois jogadores para ver se ainda  ha jogadas possiveis
+update_player(tab,lin,col,0,&a); update_player(tab,lin,col,0,&b); 
 return a.ability.green+a.ability.red+a.ability.yellow+a.ability.lc+
 b.ability.green+b.ability.red+b.ability.yellow+b.ability.lc;
 }
@@ -58,8 +57,7 @@ b.ability.green+b.ability.red+b.ability.yellow+b.ability.lc;
 
 /*********
  * int get_k(numero de linhas, numero de colunas, turno atual)
- * Obriga o utilizador a introduzir um numero de jogadas valido para ver.
- * k in [1, turn-1].
+ * Obriga o utilizador a introduzir um numero de jogadas valido, k in [1, turn-1].
  * devolve o k inserido pelo utilizador.
  */ 
 static int get_k(int turn){
@@ -77,6 +75,75 @@ do{
   clean_stdin();
  }while(flag!=1 || k>=turn || k<=0 );
 }
+
+/****
+ * static bool load_players(ponteiro para o jogador a, ponteiro para o jogador b)
+ * Abre o ficheiro "jogo.bin" e extrai para os jogadores a e b, os valores que tinham 
+ * quando o jogo foi interrompido
+ * Devolve 1 em caso de sucesso.
+ * Devolve 0 em caso de erro.
+ */
+static bool load_players(struct player *a , struct player *b){
+FILE *fp;
+if( ( fp=fopen("jogo.bin","rb") )==NULL ){
+  printf("Nao foi possivel abrir o ficheiro que continha informacao para retomar o jogo\n");
+  return 0;
+  }
+fseek(fp,sizeof(bool),SEEK_SET); //saltar o game_mode
+fread(a,sizeof(struct player),1,fp);
+fread(b,sizeof(struct player),1,fp);
+fclose(fp);
+return 1;
+}
+
+/***
+ * Abre o ficheiro "jogo.bin" e, nas variavies apontadas por cada um dos parametros, repoe 
+ * os valores que tinham antes de o jogo ser interrompido.
+ * Coloca em "*tab" o tabuleiro e atualiza "*lin" e "*col"(linhas e colunas)
+ * Coloca "*states" a apontar para a cabeca da lista, e "*end" fica a apontar para o ultimo no da lista
+ * Devolve o turno em que o jogo estava em caso de sucesso.
+ * Devolve 0 em caso de erro.
+ */ 
+static int load_tab_list(char ***tab, int *lin, int *col, struct list_head **states, struct list_node **end){
+struct list_node temp, *curr;
+FILE *fp;
+if( ( fp=fopen("jogo.bin","rb") )==NULL ){
+  printf("Nao foi possivel abrir o ficheiro que continha informacao para retomar o jogo\n");
+  return 0;
+  }
+//saltar o que nao interessa
+fseek(fp,sizeof(bool),SEEK_SET); fseek(fp,sizeof(struct player),SEEK_CUR); fseek(fp,sizeof(struct player),SEEK_CUR);
+
+fread(lin,sizeof(int),1,fp); fread(col,sizeof(int),1,fp);
+
+if ( ( *states=create_head(*lin,*col) )==NULL ){
+  printf("O programa terminara\n");
+  return 0;
+  }
+fread(&temp,sizeof(struct list_node),1,fp);
+add_node_in_head(*states,temp.lin,temp.col,temp.player_name,temp.piece,temp.place);
+curr=(*states)->next;
+place_piece_in_head_tab(*states,*curr);
+
+while( fread(&temp,sizeof(struct list_node),1,fp) ==1 ){
+  add_node_to_node(*states,curr,temp.lin,temp.col,temp.player_name,temp.piece,temp.place);
+  curr=curr->next; 
+  place_piece_in_head_tab(*states,*curr); 
+  }
+
+*lin=curr->lin; *col=curr->col;
+*end=curr;//atualizar o turno da lista
+
+*tab=create_tab_fixed_lc(*lin,*col);
+tab_copy( (*states)->tab,*tab,*lin,*col);
+if(reset_tab_in_head(*states,curr)==0 ){
+  printf("O programa ira terminar\n");
+  return 0;
+  }
+
+return curr->turn;
+}
+
 
 /*********
  * char menu()
@@ -100,6 +167,10 @@ do{
 return op;
 }
 
+/**
+ * Funcao responsavel por pedir uma jogada ao utilizador, realiza-la, e atualizar o que necessita 
+ * de ser alterado(tabuleiro, numero de linhas, habilidades do jogador, etc)
+ */ 
 void player_plays(char ***tab, int *lin, int *col, struct coordinates *place, struct player *aux, int turn, char *piece){
 draw_tab(*tab,*lin,*col);
 update_player(*tab,*lin,*col,turn,aux);
@@ -115,79 +186,12 @@ if(*piece=='L' || *piece=='C')
 }
 
 
-/****
- * static bool load_players(jogador a, jogador b)
- * Abre o ficheiro "jogo.bin" e escreve e carrega os jogadores apontados por "a" e "b"
- * com os valores que tinham quando o jogo foi interrompido
- * Devolve 1 em caso de sucesso.
- * Devolve 0 em caso de erro.
- */
-static bool load_players(struct player *a , struct player *b){
-FILE *fp;
-if( ( fp=fopen("jogo.bin","rb") )==NULL ){
-  printf("Nao foi possivel abrir o ficheiro que continha informacao para retomar o jogo\n");
-  return 0;
-  }
-fseek(fp,sizeof(bool),SEEK_SET); //saltar o game_mode
-fread(a,sizeof(struct player),1,fp);
-fread(b,sizeof(struct player),1,fp);
-fclose(fp);
-return 1;
-}
-
-
-
-
-/***
- * static bool load_tab_list(tabuleiro de jogo, numero de linhas, numero de colunas,
- * lista ligada com os estados do tabuleiro)
- * Abre o ficheiro "jogo.bin" e repoe o tabuleiro de jogo, as suas dimensoes, a lista ligada que contem
- * os estados do jogo, e o ponteiro que na funcao "game" aponta para o no "turn",
- * ao estado em que estavam antes de o jogo ser interrompido.
- * Devolve 1 em caso de sucesso.
- * Devolve 0 em caso de erro.
+/**
+ * static void show_k_prev_info(turno atual, cabeca da lista, no atual da lista)
+ * Pede por um numero de jogadas anteriores para serem visualizadas e apresenta informacao e o
+ * estado do tabuleiro nas k, jogadas anteriores
  */ 
-static bool load_tab_list(char ***tab, int *lin, int *col, int *turn, struct list_head **states, struct list_node **end){
-struct list_node temp, *curr;
-FILE *fp;
-if( ( fp=fopen("jogo.bin","rb") )==NULL ){
-  printf("Nao foi possivel abrir o ficheiro que continha informacao para retomar o jogo\n");
-  return 0;
-  }
-//saltar o que nao interessa
-fseek(fp,sizeof(bool),SEEK_SET); fseek(fp,sizeof(struct player),SEEK_CUR); fseek(fp,sizeof(struct player),SEEK_CUR);
-fread(lin,sizeof(int),1,fp); fread(col,sizeof(int),1,fp);
-
-if ( ( *states=create_head(*lin,*col) )==NULL ){
-  printf("O programa terminara\n");
-  return 0;
-  }
-fread(&temp,sizeof(struct list_node),1,fp);
-add_node_in_head(*states,temp.lin,temp.col,temp.player_name,temp.piece,temp.place);
-curr=(*states)->next;
-place_piece_in_head_tab(*states,*curr);
-
-while( fread(&temp,sizeof(struct list_node),1,fp) ==1 ){
-  add_node_to_node(*states,curr,temp.lin,temp.col,temp.player_name,temp.piece,temp.place);
-  curr=curr->next; 
-  place_piece_in_head_tab(*states,*curr); 
-  }
-
-*lin=curr->lin; *col=curr->col; *turn=curr->turn+1;
-*end=curr;//atualizar o turno da lista
-
-*tab=create_tab_fixed_lc(*lin,*col);
-tab_copy( (*states)->tab,*tab,*lin,*col);
-if(reset_tab_in_head(*states,curr)==0 ){
-  printf("O programa ira terminar\n");
-  return 0;
-  }
-
-return 1;
-}
-
-
-void show_k_prev_info(int turn, struct list_head *states, struct list_node *curr){
+static void show_k_prev_info(int turn, struct list_head *states, struct list_node *curr){
 int k;
 k=get_k(turn);
 printf("\n\nAs %d jogadas anteriores foram: \n\n",k);
@@ -206,8 +210,7 @@ struct list_head *states;
 struct list_node *curr; 
 if(resume==1){
   load_players(&a,&b);
-  load_tab_list(&tab,&lin,&col,&k,&states,&curr);
-  turn=k; //?????
+  turn=load_tab_list(&tab,&lin,&col,&states,&curr);
   }
 else{ //comecar jogo do zero
   if( ( tab=create_tab(&lin,&col) )==NULL ){
@@ -249,7 +252,7 @@ while(check_victory(tab,lin,col,*aux)!=1 || check_tie(tab,lin,col,a,b)!=1){
       "posteriormente\n");
       export_bin(*states,a,b,states->lin,states->col,game_mode);//lin e col iniciais
       free_tab(tab,lin);
-      free_tab_in_head(states,curr->lin); 
+      free_head_and_tab_in_head(states,curr->lin); 
       return ;
       }
     }
@@ -279,6 +282,6 @@ if( reset_tab_in_head(states,curr)==0 ){
   return ; //a lista ja esta limpa
   }
 export_states_txt(states);
-free_tab_in_head(states,curr->lin);
+free_head_and_tab_in_head(states,curr->lin);
 }
 
