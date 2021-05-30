@@ -1,14 +1,14 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdbool.h>
-#include "files.h"
-#include "tab.h"
+#include "linked.h"
 #include "play.h"
+#include "files.h"
+
 
 /**
- * static void ask_filename(string em que o nome do ficheiro sera guardado)
- * Pede ao utilizador para introduzir um nome para o ficheiro em que serao
- * guardados os estados do tabuleiro.
+ * static void ask_filename(string)
+ * Pede ao utilizador um nome e insere-o na string recebida como argumento
  * Le no maximo 10 carateres e coloca .txt no final.
  */
 static void ask_filename(char *filename){
@@ -20,12 +20,12 @@ strcat(filename,".txt");
 
 
 /****
- * static void write_info_to_file(no atual)
+ * static write_node_info_to_file(no atual)
  * Baseado na informacao do no escreve informacao sobre a jogada realizada
  * no ficheiro apontado por fp.
- * O ficheiro ja vem aberto
+ * O ficheiro ja vem aberto e nao e fechado pela funcao
  */ 
-static void write_info_to_file(struct list_node curr, FILE *fp){
+static void write_node_info_to_file(struct list_node curr, FILE *fp){
 fprintf(fp,"Turno %d\n",curr.turn);
 fprintf(fp,"O jogador %c ",curr.player_name);
 if(curr.piece!='L' && curr.piece!='C')
@@ -36,11 +36,10 @@ else
 
 
 /*************
- *  void draw_tab_to:file(tabuleiro de jogo, numero de linhas, numero de colunas,
+ *  void draw_tab_to_file(tabuleiro de jogo, numero de linhas, numero de colunas,
  *  ficheiro para escrita)
- *  Desenha o tabuleiro do jogo, numa forma apropriada, que se adapta a um numero 
- *  variavel de linhas e colunas no ficheiro apontado por fp.
- *  O ficheiro ja vem aberto
+ *  Desenha o tabuleiro do jogo no ficheiro apontado por fp.
+ *  O ficheiro ja vem aberto e nao e fechado
  ***************/
 void draw_tab_to_file(char **tab, int lin, int col, FILE *fp){
 int i,j,aux;
@@ -68,7 +67,7 @@ for(i=0; i<col; ++i)
  * bool export_states_txt(cabeca da lista que contem os estados do tabuleiro)
  * Cria um ficheiro .txt com um nome indicado pelo utilizador e escreve nesse 
  * ficheiro a sucessao de estados do tabuleiro.
- * Devolve 1 se consegui abrir o ficheiro.
+ * Devolve 1 se conseguiu criar o ficheiro.
  * Devolve 0 caso contrario.
  */
 bool export_states_txt(struct list_head *states){
@@ -81,8 +80,8 @@ if( ( fp=fopen(filename,"w") )==NULL ){
   return 0;
   }
 for(curr=states->next; curr!=NULL; curr=curr->next){
-  write_info_to_file(*curr,fp);
-  place_piece(states,*curr);
+  write_node_info_to_file(*curr,fp);
+  place_piece_in_head_tab(states,*curr);
   draw_tab_to_file(states->tab,curr->lin,curr->col,fp);
   if(curr->next!=NULL) 
     fprintf(fp,"\n\n-----------------------------------------------\n\n");
@@ -98,7 +97,7 @@ return 1;
  * bool export_states_bin(cabeca da lista que contem os estados do tabuleiro, jogador a, jogador b,
  * numero de linhas iniciais, numero de colunas iniciais, modo de jogo)
  * Escreve no ficheiro toda a informacao necessaria para retomar um jogo.
- * A disposicao do ficheiro e a seguinte:
+ * A disposicao do ficheiro ficara a seguinte:
  * 
  * |************************************************************************|
  * |modo de jogo | jogador a | jogador b | linhas iniciais| colunas iniciais|

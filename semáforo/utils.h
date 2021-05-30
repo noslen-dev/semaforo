@@ -13,6 +13,7 @@ int intUniformRnd(int a, int b);
 // Devolve o valor 1 com probabilidade prob. Caso contrario, devolve 0
 int probEvento(float prob);
 
+// Le carateres em stdin ate aencontrar um '\n'
 void clean_stdin();
 
 

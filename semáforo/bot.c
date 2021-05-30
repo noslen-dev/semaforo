@@ -1,7 +1,8 @@
-#include "bot.h"
-#include "play.h"
-#include "utils.h"
 #include <stdio.h>
+#include "play.h"
+#include "bot.h"
+#include "utils.h"
+
 
 
 /***
@@ -20,8 +21,8 @@ for(i=0; i<dim; ++i){
 }
 
 /**********
- * static void update_bot(tabuleiro do jogo, numero de linhas, numero de colunas, jogador atual)
- * Percorre todo o tabuleiro e atualiza os membros da "struct plays" do player "bot"
+ * static void update_bot(tabuleiro do jogo, numero de linhas, numero de colunas, ponteiro para jogador automatico)
+ * Percorre todo o tabuleiro e atualiza as habilidades do jogador automatico
  * com um 0 ou 1
  * 0 indica que o jogador nao pode fazer essa jogada
  * 1 indica que o jogador pode fazer essa jogada
@@ -42,14 +43,6 @@ for(i=0; i<lin; ++i)
         bot->ability.red=1;
         break;
     }
-}
-
-void print_arr(char *arr, int dim){
-int i;
-printf("\n\n");
-for(i=0; i<dim; ++i)
-  printf("%c ",arr[i]);
-printf("\n\n");
 }
 
 /**
@@ -126,7 +119,7 @@ return 0;
  * numero da peca a ser substituida, coordenadas )
  * Percorre o tabuleiro, encontra a "replace_piece" nº "n_piece" e guarda essa localizacao em "place".
  * Ex: se "replace_piece"=='G' e "n_piece"=='2', a funcao coloca em "place" as coordenadas da segunda
- * "replace_piece".
+ * peca 'G'.
  */ 
 static void update_coord(char **tab, int lin, int col, char replace_piece ,int n_piece,struct coordinates *place){
 int i,j,cnt=0;
@@ -143,26 +136,26 @@ for(i=0; i<lin; ++i)
 }
 
 /***
- * bool bot_plays(tabuleiro de jogo, numero de linhas, numero de colunas, peca, coordenadas, jogador automatico,)
+ * bool bot_plays(tabuleiro de jogo, numero de linhas, numero de colunas, peca, coordenadas, 
+ * ponteiro para jogador automatico)
  * Realiza uma jogada automaticamente.
  * Devolve 1 se a jogada foi feita com sucesso.
- * Devolve 0 caso contrario(alocacao de linhas ou colunas falha)
+ * Devolve 0 caso contrario(alocacao de linhas ou colunas falhou)
  */ 
 bool bot_plays(char ***tab, int *lin, int *col, char *piece, struct coordinates *place, struct player *bot){
 int n_piece;
 char replace_piece;
 update_bot(*tab,*lin,*col,bot);
 *piece=choose_play(*bot);
-//!!!!!!!!!!!!!!
 if(*piece!='L' && *piece!='C'){
   n_piece=interpret_piece(*tab, *lin, *col, *piece,&replace_piece);
+  n_piece=intUniformRnd(1,n_piece); 
   update_coord(*tab, *lin, *col, replace_piece, n_piece, place);
   (*tab)[place->x][place->y]=*piece;
   if(*piece=='S')
     bot->ability.rock-=1;
     }
-
-if(*piece=='L' || *piece=='C')
+else
   if( add_l_c(tab, lin, col,*piece,bot)==NULL)
     return 0;
 place->x+=1;
@@ -172,7 +165,7 @@ return 1;
 
 /***
  * void show_bot_play(jogador automatico, peca, coordenadas do tabuleiro em que a peca foi colocada)
- * Mostra apenas que jogada o jogador automatico fez.
+ * Mostra a jogada o jogador automatico fez.
  */
 void show_bot_play(struct player bot, char piece, struct coordinates place){
 printf("O jogador %c ",bot.name);

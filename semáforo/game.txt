@@ -1,169 +1,83 @@
 Turno 1
-O jogador A colocou a peca G na posicao 2 2
+O jogador A colocou a peca G na posicao 2 3
 
-  1    |   |    
-    -----------
-  2    | G |    
-    -----------
-  3    |   |    
-     1   2   3
-
------------------------------------------------
-
-Turno 2
-O jogador B adicionou uma coluna
   1    |   |   |    
     ---------------
-  2    | G |   |    
+  2    |   | G |    
     ---------------
   3    |   |   |    
-     1   2   3   4
-
------------------------------------------------
-
-Turno 3
-O jogador A colocou a peca G na posicao 2 4
-
-  1    |   |   |    
-    ---------------
-  2    | G |   | G  
-    ---------------
-  3    |   |   |    
-     1   2   3   4
-
------------------------------------------------
-
-Turno 4
-O jogador B colocou a peca S na posicao 3 4
-
-  1    |   |   |    
-    ---------------
-  2    | G |   | G  
-    ---------------
-  3    |   |   | S  
-     1   2   3   4
-
------------------------------------------------
-
-Turno 5
-O jogador A colocou a peca G na posicao 1 1
-
-  1  G |   |   |    
-    ---------------
-  2    | G |   | G  
-    ---------------
-  3    |   |   | S  
-     1   2   3   4
-
------------------------------------------------
-
-Turno 6
-O jogador B adicionou uma linha
-  1  G |   |   |    
-    ---------------
-  2    | G |   | G  
-    ---------------
-  3    |   |   | S  
     ---------------
   4    |   |   |    
      1   2   3   4
 
 -----------------------------------------------
 
-Turno 7
-O jogador A colocou a peca G na posicao 4 4
+Turno 2
+O jogador B colocou a peca G na posicao 4 4
 
-  1  G |   |   |    
+  1    |   |   |    
     ---------------
-  2    | G |   | G  
+  2    |   | G |    
     ---------------
-  3    |   |   | S  
+  3    |   |   |    
     ---------------
   4    |   |   | G  
      1   2   3   4
 
 -----------------------------------------------
 
-Turno 8
-O jogador B colocou a peca Y na posicao 4 4
-
-  1  G |   |   |    
-    ---------------
-  2    | G |   | G  
-    ---------------
-  3    |   |   | S  
-    ---------------
-  4    |   |   | Y  
-     1   2   3   4
-
------------------------------------------------
-
-Turno 9
-O jogador A colocou a peca G na posicao 2 1
-
-  1  G |   |   |    
-    ---------------
-  2  G | G |   | G  
-    ---------------
-  3    |   |   | S  
-    ---------------
-  4    |   |   | Y  
-     1   2   3   4
-
------------------------------------------------
-
-Turno 10
-O jogador B colocou a peca R na posicao 4 4
-
-  1  G |   |   |    
-    ---------------
-  2  G | G |   | G  
-    ---------------
-  3    |   |   | S  
-    ---------------
-  4    |   |   | R  
-     1   2   3   4
-
------------------------------------------------
-
-Turno 11
+Turno 3
 O jogador A colocou a peca G na posicao 4 1
 
-  1  G |   |   |    
+  1    |   |   |    
     ---------------
-  2  G | G |   | G  
+  2    |   | G |    
     ---------------
-  3    |   |   | S  
+  3    |   |   |    
     ---------------
-  4  G |   |   | R  
+  4  G |   |   | G  
      1   2   3   4
 
 -----------------------------------------------
 
-Turno 12
-O jogador B colocou a peca S na posicao 4 3
+Turno 4
+O jogador B colocou a peca G na posicao 3 2
 
-  1  G |   |   |    
+  1    |   |   |    
     ---------------
-  2  G | G |   | G  
+  2    |   | G |    
     ---------------
-  3    |   |   | S  
+  3    | G |   |    
     ---------------
-  4  G |   | S | R  
+  4  G |   |   | G  
      1   2   3   4
 
 -----------------------------------------------
 
-Turno 13
-O jogador A colocou a peca G na posicao 3 1
+Turno 5
+O jogador A colocou a peca Y na posicao 4 4
 
-  1  G |   |   |    
+  1    |   |   |    
     ---------------
-  2  G | G |   | G  
+  2    |   | G |    
     ---------------
-  3  G |   |   | S  
+  3    | G |   |    
     ---------------
-  4  G |   | S | R  
+  4  G |   |   | Y  
      1   2   3   4
 
-Fim do jogo, vitoria do jogador A
+-----------------------------------------------
+
+Turno 6
+O jogador B colocou a peca G na posicao 1 4
+
+  1    |   |   | G  
+    ---------------
+  2    |   | G |    
+    ---------------
+  3    | G |   |    
+    ---------------
+  4  G |   |   | Y  
+     1   2   3   4
+
+Fim do jogo, vitoria do jogador B

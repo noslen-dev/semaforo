@@ -2,31 +2,29 @@
 #include "play.h"
 #include "tab.h"
 #include "utils.h"
-//funcoes que auxiliam o jogo
+
 
 /*******
- * int cell_has_piece(tabuleiro de jogo, coordenadas da peca, peca)
- * Retorna 1 se "piece" estiver na posição tab[x][y]
+ * static bool cell_has_piece(tabuleiro, peca, coordenadas)
+ * Retorna 1 se "piece" estiver na posicao "place"
  * Retorna 0 caso contrario
- */
-static int cell_has_piece(char **tab, struct coordinates place, char piece){
+ *******/
+static bool cell_has_piece(char **tab, char piece ,struct coordinates place){
 return tab[place.x][place.y]==piece ? 1 : 0;
 }
 
 /*******
- * bool is_inside(cordenadas de uma peca, numero de linhas e colunas)
- * retorna 1 se x e y estiverem dentro dos limites do tabuleiro
- * retorna 0 caso contrario
+ * static bool is_inside(coordenadas, numero de linhas, numero de colunas)
+ * Retorna 1 se "place" estiver dentro do tabuleiro
+ * Retorna 0 caso contrario
  */
 static bool is_inside(struct coordinates place, int lin, int col){
 return place.x<=lin && place.x>=1 && place.y<=col && place.y>=1 ? 1 : 0;
 }
 
-
-
 /**********
- * void update_player(tabuleiro do jogo, numero de linhas, numero de colunas, turno atual, jogador atual)
- * Percorre todo o tabuleiro e atualiza os membros da "struct plays" do "jogador a"
+ * void update_player(tabuleiro, numero de linhas, numero de colunas, turno atual, ponteiro para o jogador atual)
+ * Percorre todo o tabuleiro e atualiza as habilidades do jogador recebido como argumento 
  * com um 0 ou 1
  * 0 indica que o jogador nao pode fazer essa jogada
  * 1 indica que o jogador pode fazer essa jogada
@@ -51,8 +49,9 @@ if(turn>1)
   a->ability.k_interrupt=1;
 }
 
+
 /**********
- * void print_play(jogador atual)
+ * void show_plays(jogador atual)
  * Escreve na consola, todas as jogadas que o jogador atual pode realizar
  *********/ 
 void show_plays(struct player a){
@@ -70,13 +69,12 @@ if(a.ability.k_interrupt!=0)
 }
 
 /**********
- *  int validate_play(jogador atual, carater pressionado pelo utilizador)
- *  Devolve:
- *    0 se o carater pressionado pelo utilizador for invalido, ou se ele nao puder 
- *    realizar essa jogada
- *    1 se a jogada é valida
+ *  static bool validate_play(jogador atual, carater pressionado pelo utilizador)
+ *  Retorna 0 se o carater pressionado pelo utilizador for invalido, ou se ele nao puder 
+ *  realizar essa jogada e escreve uma mensagem de erro
+ *  Retorna 1 se a jogada for valida
  *********/ 
-static int validate_play(struct player a,char play){
+static bool validate_play(struct player a,char play){
 switch(play){
   case 'G':
     if(a.ability.green==0){
@@ -138,10 +136,10 @@ return 1;
 
 
 /**********
- *  char ask_play(jogador em questao)
- *  pede por um carater ao utilizador até ele digitar um carater válido,
+ *  char ask_play(jogador)
+ *  Pede por um carater ao utilizador até ele digitar um carater válido,
  *  ou seja, uma jogada que possa fazer no momento
- *  devolve essa jogada
+ *  Devolve essa jogada
  *********/ 
 char ask_play(struct player a){
 char play;
@@ -160,9 +158,9 @@ return play;
 
 
 /*******
- * void ask_place(cordenadas de uma celula do tabuleiro, numero de linhas e colunas)
+ * void ask_place(ponteiro para coordenadas, numero de linhas, numero de colunas)
  * Obriga o utilizador a introduzir coordenadas dentro do tabuleiro e num formato valido
- * Coloca as coordenadas inseridas nos parametros "x" e "y".
+ * Coloca as coordenadas inseridas em "place"
  */
 void ask_place(struct coordinates *place, int lin, int col){
 int flag=0;
@@ -182,40 +180,40 @@ do{
 
 
 /*******
- * int interpret_play(tabuleiro de jogo, numero de linhas, numero de colunas
- * ,peca, coordenadas dessa pessa, jogador a ser alterado)
+ * bool interpret_play(tabuleiro de jogo, numero de linhas, numero de colunas
+ * ,peca, coordenadas dessa peca, jogador a ser alterado)
  * Recebe uma peca "play" e se for valida coloca-a no tabuleiro e decrementa as
  * habilidades do jogador, se for necessario.
  * Retorna 0 se a jogada for valida
  * Retorna 1 e exibe uma mensagem de erro se a jogada for invalida.
  */
-int interpret_play(char **tab, int lin, int col, char play,struct coordinates place, struct player *a){
+bool interpret_play(char **tab, int lin, int col, char play,struct coordinates place, struct player *a){
 --place.x; --place.y;
 switch(play){
-  case 'G': //inserir peça verde
-    if(cell_has_piece(tab,place,' ')==0){ //se nao tiver ' ' nao se pode meter verde
+  case 'G': 
+    if(cell_has_piece(tab,' ',place)==0){ //se nao tiver ' ' nao se pode meter verde
       printf(OCC_POS);
       return 1;
     }
     tab[place.x][place.y]='G';
     break;
-  case 'Y' : //trocar verde por amarela
-    if(cell_has_piece(tab,place,'G')==0){
+  case 'Y' : 
+    if(cell_has_piece(tab,'G',place)==0){
       printf("Nessa posicao nao esta uma peca verde para ser trocada\n");
       return 1;
     }
     tab[place.x][place.y]='Y';
     break;
-  case 'R': //inserir pedra
-    if(cell_has_piece(tab,place,'Y')==0){
+  case 'R': 
+    if(cell_has_piece(tab,'Y',place)==0){
       printf("Nessa posicao nao esta uma peca amarela para ser trocada\n");
       return 1;
     }
     tab[place.x][place.y]='R';
     break;
 
-    case 'S': //inserir pedra
-    if(cell_has_piece(tab,place,' ')==0){
+    case 'S': 
+    if(cell_has_piece(tab,' ',place)==0){
       printf(OCC_POS);
       return 1; 
     }
@@ -228,10 +226,10 @@ return 0;
 
 
 /*******
- * char ** add_l_c(endereco do tabuleiro de jogo, ponteiro para o numero de linhas e colunas,
- * peca, jogador a ser alterado)
- * conforme o valor de "play"('C' ou 'L'), adiciona uma linha ou uma colunas e decrementa
- * a habilidade de inserir linhas ou colunas num utilizador.
+ * char ** add_l_c(endereco do tabuleiro de jogo, ponteiro para o numero de linhas, ponteiro para
+ * o numero de colunas, peca, jogador a ser alterado)
+ * conforme o valor de "play"('C' ou 'L'), adiciona uma linha ou uma coluna e decrementa
+ * a habilidade de inserir linhas ou colunas do jogador.
  * Se inserir uma linha atualiza o tabuleiro do jogo.
  * Em caso de sucesso devolve o tabuleiro do jogo.
  * Em caso de erro retorna NULL

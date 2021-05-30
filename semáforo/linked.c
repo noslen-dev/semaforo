@@ -1,57 +1,57 @@
 #include <stdlib.h>
 #include <stdio.h>
-#include "linked.h"
+#include <stdbool.h>
 #include "tab.h"
+#include "linked.h"
+
 
 
 /****
  * static void free_list(cabeca da lista)
- * Limpa todos os nos da lista e limpa a cabeca
  * Liberta a lista por completo
  */ 
 static void free_list(struct list_head *head){
-struct list_node *ptr, *next;
-for(ptr=next=head->next; ptr!=NULL; ptr=next){
-  next=ptr->next;
-  free(ptr);
+struct list_node *curr, *next;
+for(curr=next=head->next; curr!=NULL; curr=next){
+  next=curr->next;
+  free(curr);
   }
 free(head);
 }
 
 
 /****
- * void free_list_and_tab(cabeca da lista, numero de linhas do tabuleiro atual)
+ * void free_tab_in_head(cabeca da lista, numero de linhas do tabuleiro atual)
  * Limpa todos os nos da lista e limpa a cabeca e o seu tabuleiro
  * Liberta a lista por completo
  */ 
-void free_list_and_tab(struct list_head *head, int lin){
-struct list_node *ptr, *next;
-for(ptr=next=head->next; ptr!=NULL; ptr=next){ //limpa os nos
-  next=ptr->next;
-  free(ptr);
+void free_tab_in_head(struct list_head *head, int lin){
+struct list_node *curr, *next;
+for(curr=next=head->next; curr!=NULL; curr=next){ //limpa os nos
+  next=curr->next;
+  free(curr);
   }
 free_tab(head->tab,lin); //limpa o tabuleiro da cabeca
 free(head); //limpa a cabeca
 }
 
 /***
- * bool reset_tab(cabeca da lista, ultimo no)
- * Faz com que o "tab" presente em head, volte ao estado em que estava antes de
+ * bool reset_tab_in_head(cabeca da lista, ultimo no)
+ * Faz com que o tabuleiro presente em head, volte ao estado em que estava antes de
  * comecar o jogo.
  * Se uma alocacao falhar limpa a lista e devolve 0
- * Se tudo correr bem devolve .
+ * Se tudo correr bem devolve 1
  */ 
-bool reset_tab(struct list_head *head, struct list_node *curr){
+bool reset_tab_in_head(struct list_head *head, struct list_node *curr){
 char **aux;
 if( ( aux=create_tab_fixed_lc(head->lin,head->col) )==NULL ){ //resetar a cabeca
   fprintf(stderr,ALLOCATION_ERROR_LINKED);
-  free_list_and_tab(head,curr->lin); //as linhas podem ter sido alteradas
+  free_tab_in_head(head,curr->lin); //a dimensao do tabuleiro pode ter sido alterada, precisamos de passar as linhas atuais
   return 0;
   }
 head->tab=aux;
 return 1;
 }
-
 
 
 /****
@@ -71,9 +71,10 @@ else
 
 /*****
  * struct list_head *create_head(numero de linhas, numero de colunas)
- * Cria a cabeca de linked list que ira guardar os estados do tabuleiro.
- * Inicializa os menbros da cabeca, faz o membro "tab" apontar ja para um
- * tabuleiro de dimensao lin x col.
+ * Cria a cabeca da linked list, que ira guardar os estados do tabuleiro.
+ * Inicializa todos os membros da cabeca 
+ * Faz o membro "tab" apontar para um
+ * tabuleiro de dimensao lin x col e guarda as dimensoes desse tabuleiro nos membros respetivos
  * Devolve a cabeca em caso de sucesso.
  * Devolve NULL em caso de erro
  */ 
@@ -95,17 +96,17 @@ return new_head;
 
 
 /*****
- * struct list_node add_node_in_head(cabeca da lista, linhas, colunas, nome do jogador, peca atual,
- * coordenadas do tabuleiro)
+ * bool add_node_in_head(cabeca da lista, linhas, colunas, nome do jogador, peca atual,
+ * coordenadas em que a peca atual foi colocada)
  * Adiciona e inicializa com informacao recebida por argumento um novo no.Este no e adcionado a cabeca da lista
  * Este no representa o turno 1.
- * Devolve NULL em caso de erro e o novo no em caso de sucesso.
+ * Devolve 0 em caso de erro e 1 em caso de sucesso.
  */ 
 bool add_node_in_head(struct list_head *head, int lin, int col, char name, char piece ,struct coordinates place){
 struct list_node * new_node;
 if( ( new_node=malloc(sizeof(struct list_node)) )==NULL ){
   fprintf(stderr,ALLOCATION_ERROR_LINKED);
-  free_list_and_tab(head,head->lin); //liberta head e o seu tabuleiro
+  free_tab_in_head(head,head->lin); //liberta head e o seu tabuleiro
   return 0;
   }
 new_node->lin=lin; new_node->col=col;
@@ -123,9 +124,9 @@ return 1; //indica sucesso
 
 
 /*****
- * bool add_node_in_head(cabeca da lista,no anterior, linhas, colunas, nome do jogador, peca atual,
- * coordenadas do tabuleiro)
- * Adiciona e inicializa com informacao recebida por argumento um novo no, este no e inserido noutro no.
+ * bool add_node_to_node(cabeca da lista,no anterior, linhas, colunas, nome do jogador, peca atual,
+ * coordenadas da peca atual)
+ * Adiciona e inicializa com informacao recebida por argumento um novo no, este no e inserido apos o no anterior
  * Devolve 0 em caso de erro e limpa a lista.
  * Devolve 1 em caso de sucesso
  */ 
@@ -133,7 +134,7 @@ bool add_node_to_node(struct list_head *head,struct list_node *prev, int lin, in
 struct list_node * new_node;
 if( ( new_node=malloc(sizeof(struct list_node)) )==NULL ){
   fprintf(stderr,ALLOCATION_ERROR_LINKED);
-  free_list_and_tab(head,prev->lin); //o tabuleiro atual pode ter as linhas aumentadas
+  free_tab_in_head(head,prev->lin); //o tabuleiro atual pode ter as linhas aumentadas
   return 0;
   }
 new_node->lin=lin; new_node->col=col;
@@ -151,13 +152,13 @@ return 1; //indica sucesso
 
 
 /***
- * bool place_piece(cabeca da lista, no atual)
+ * bool place_piece_in_head_tab(cabeca da lista, no atual)
  * Com a informacao presente em "curr", atualiza o tabuleiro da cabeca
  * Se alguma alocacao falhar, a funcao limpa a lista por completo.
  * Devolve 1 se as alocacoes foram um sucesso.
  * Devolve 0 se alguma alocacao falhou
  */ 
-bool place_piece(struct list_head *head,struct list_node curr){
+bool place_piece_in_head_tab(struct list_head *head, struct list_node curr){
 char **aux;
 curr.place.x-=1; curr.place.y-=1;
 if(curr.piece!='L' && curr.piece!='C')
@@ -179,7 +180,7 @@ else //inserir linha ou coluna
       return 0;
       }
     }
-return 1; //sucesso
+return 1; 
 }
 
 
@@ -191,11 +192,11 @@ return 1; //sucesso
  * Devolve 1 em caso de sucesso
 */
 bool show_k_prev(int k,struct list_head *head, struct list_node *end){
-if( reset_tab(head,end)==0 )
+if( reset_tab_in_head(head,end)==0 )
   return 0; //erro ja esta escrito e lista ja esta limpa
 struct list_node *curr;
 for(curr=head->next; curr!=NULL  ;curr=curr->next){
-  place_piece(head,*curr);
+  place_piece_in_head_tab(head,*curr);
   if(end->turn+1-curr->turn<=k){
     write_info(*curr);
     draw_tab(head->tab,curr->lin,curr->col);

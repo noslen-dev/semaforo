@@ -1,6 +1,5 @@
 #include <stdio.h>
 #include <unistd.h>
-#include <stdbool.h>
 #include "utils.h"
 #include "game.h"
 
@@ -12,6 +11,7 @@
 
 
 int main(){
+initRandom();
 char op='N';
 bool game_mode;
 FILE *fp;
@@ -47,7 +47,7 @@ if(op=='N'){ //se nao ha ficheiro ou nao quer continuar o jogo
   else
     game(1,0); //computador sem resumir
   }
-printf("\n\nObirgado por jogar o jogo do semaforo!!!\n\n");
+printf("\n\nObrigado por jogar o jogo do semaforo!!!\n\n");
 return 0;
 }
 

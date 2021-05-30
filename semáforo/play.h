@@ -7,7 +7,7 @@
 
 #define OCC_POS "Escolheu uma posicao do tabuleiro ja ocupada\n"
 
-struct plays{
+struct plays{ //cada membro representa uma jogada que um jogador pode realizar
   bool green;
   bool yellow;
   bool red;
@@ -16,12 +16,12 @@ struct plays{
   bool k_interrupt;
 };
 
-struct player{
+struct player{ //estrutura jogador
   char name;
   struct plays ability;
 };
 
-struct coordinates{
+struct coordinates{ //coordenadas de uma localizacao do tabuleiro
   int x,y;
 };
 
@@ -29,7 +29,7 @@ struct coordinates{
 void update_player(char **tab, int lin, int col,int turn ,struct player *a);
 void show_plays(struct player a);
 char ask_play(struct player a);
-int interpret_play(char **tab, int lin, int col, char play,struct coordinates place, struct player *a);
+bool interpret_play(char **tab, int lin, int col, char play,struct coordinates place, struct player *a);
 void ask_place(struct coordinates *place, int lin, int col);
 char **add_l_c(char ***tab, int *lin, int *col, char play, struct player *a);
 

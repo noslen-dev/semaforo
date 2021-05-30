@@ -35,7 +35,7 @@ a->name=name;
  * Em caso de nao vitoria retorna 0.
  */ 
 static bool check_victory(char **tab, int lin, int col, struct player a){
-if(check_lin(tab,lin,col)==1 || check_col(tab,lin,col)==1 || check_diagonal(tab,lin,col)==1){
+if(check_lins(tab,lin,col)==1 || check_cols(tab,lin,col)==1 || check_diagonals(tab,lin,col)==1){
   printf("O jogador %c venceu o jogo!!!\n\n",a.name);
   draw_tab(tab,lin,col);
   return 1;
@@ -100,7 +100,7 @@ do{
 return op;
 }
 
-void ask_player(char ***tab, int *lin, int *col, struct coordinates *place, struct player *aux, int turn, char *piece){
+void player_plays(char ***tab, int *lin, int *col, struct coordinates *place, struct player *aux, int turn, char *piece){
 draw_tab(*tab,*lin,*col);
 update_player(*tab,*lin,*col,turn,aux);
 show_plays(*aux);
@@ -165,12 +165,12 @@ if ( ( *states=create_head(*lin,*col) )==NULL ){
 fread(&temp,sizeof(struct list_node),1,fp);
 add_node_in_head(*states,temp.lin,temp.col,temp.player_name,temp.piece,temp.place);
 curr=(*states)->next;
-place_piece(*states,*curr);
+place_piece_in_head_tab(*states,*curr);
 
 while( fread(&temp,sizeof(struct list_node),1,fp) ==1 ){
   add_node_to_node(*states,curr,temp.lin,temp.col,temp.player_name,temp.piece,temp.place);
   curr=curr->next; 
-  place_piece(*states,*curr); 
+  place_piece_in_head_tab(*states,*curr); 
   }
 
 *lin=curr->lin; *col=curr->col; *turn=curr->turn+1;
@@ -178,7 +178,7 @@ while( fread(&temp,sizeof(struct list_node),1,fp) ==1 ){
 
 *tab=create_tab_fixed_lc(*lin,*col);
 tab_copy( (*states)->tab,*tab,*lin,*col);
-if(reset_tab(*states,curr)==0 ){
+if(reset_tab_in_head(*states,curr)==0 ){
   printf("O programa ira terminar\n");
   return 0;
   }
@@ -190,10 +190,10 @@ return 1;
 void show_k_prev_info(int turn, struct list_head *states, struct list_node *curr){
 int k;
 k=get_k(turn);
-printf("As %d jogadas anteriores foram: \n",k);
+printf("\n\nAs %d jogadas anteriores foram: \n\n",k);
 show_k_prev(k,states,curr);
-printf("Pressione qualquer tecla para voltar ao jogo: ");
-scanf("*%c");
+printf("Pressione a tecla ENTER para voltar ao jogo: ");
+clean_stdin();
 }
 
 
@@ -224,7 +224,7 @@ else{ //comecar jogo do zero
 
 //inicio efetivo do jogo
 while(check_victory(tab,lin,col,*aux)!=1 || check_tie(tab,lin,col,a,b)!=1){
-  printf("Turno %d, vez do jogador %c\n\n",turn,turn%2==0 ? 'B' : 'A'); //impares B, pares A
+  printf("\n\nTurno %d, vez do jogador %c\n\n",turn,turn%2==0 ? 'B' : 'A'); //impares B, pares A
   if(turn%2==0)
     aux=&b;
   else
@@ -233,20 +233,23 @@ while(check_victory(tab,lin,col,*aux)!=1 || check_tie(tab,lin,col,a,b)!=1){
   if(game_mode==1 && aux==&b){ //vez do bot
     bot_plays(&tab,&lin,&col,&piece,&place,aux);
     show_bot_play(*aux,piece,place);
+    draw_tab(tab,lin,col);
+    printf("\n\nPrima a tecla ENTER para fazer a sua jogada ");
+    scanf("*%[^\n]");
     }
 
   else{ //jogador humano
-    ask_player(&tab,&lin,&col,&place,aux,turn,&piece);
+    player_plays(&tab,&lin,&col,&place,aux,turn,&piece);
     if(piece=='K'){
       show_k_prev_info(turn,states,curr);
       continue;
       }
     if(piece=='I'){
-      printf("O jogo ira terminar mas sera guardado num ficheiro para o poder continuar\n"
+      printf("\nO jogo ira terminar mas sera guardado num ficheiro para o poder continuar\n"
       "posteriormente\n");
       export_bin(*states,a,b,states->lin,states->col,game_mode);//lin e col iniciais
       free_tab(tab,lin);
-      free_list_and_tab(states,curr->lin); 
+      free_tab_in_head(states,curr->lin); 
       return ;
       }
     }
@@ -256,14 +259,14 @@ while(check_victory(tab,lin,col,*aux)!=1 || check_tie(tab,lin,col,a,b)!=1){
     if(add_node_in_head(states,lin,col,aux->name,piece,place)==0 ) {
       free_tab(tab,lin); //a lista ja esta limpa
       return ;
-    }
+      }
     curr=states->next;
-  }
+    }
   else{ //estamos em qualquer outro turno
     if(add_node_to_node(states,curr,lin,col,aux->name,piece,place)==0 ){
       free_tab(tab,lin); //a lista ja esta limpa
       return ;
-    }
+      }
     curr=curr->next;
     }
   ++turn;
@@ -271,11 +274,11 @@ while(check_victory(tab,lin,col,*aux)!=1 || check_tie(tab,lin,col,a,b)!=1){
 //fim do jogo
 free_tab(tab,lin); //apagar o tabuleiro
 
-if( reset_tab(states,curr)==0 ){
+if( reset_tab_in_head(states,curr)==0 ){
   fprintf(stderr,"Erro ao exportar os estados do tabuleiro para um ficheiro\n");
   return ; //a lista ja esta limpa
   }
 export_states_txt(states);
-free_list_and_tab(states,curr->lin);
+free_tab_in_head(states,curr->lin);
 }
 
