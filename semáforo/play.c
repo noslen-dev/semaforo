@@ -10,7 +10,7 @@
  * Retorna 0 caso contrario
  *******/
 static bool cell_has_piece(char **tab, char piece ,struct coordinates place){
-return tab[place.x][place.y]==piece ? 1 : 0;
+    return tab[place.x][place.y]==piece ? 1 : 0;
 }
 
 /*******
@@ -19,7 +19,7 @@ return tab[place.x][place.y]==piece ? 1 : 0;
  * Retorna 0 caso contrario
  */
 static bool is_inside(struct coordinates place, int lin, int col){
-return place.x<=lin && place.x>=1 && place.y<=col && place.y>=1 ? 1 : 0;
+    return place.x<=lin && place.x>=1 && place.y<=col && place.y>=1 ? 1 : 0;
 }
 
 /**********
@@ -30,23 +30,25 @@ return place.x<=lin && place.x>=1 && place.y<=col && place.y>=1 ? 1 : 0;
  * 1 indica que o jogador pode fazer essa jogada
  ***********/ 
 void update_player(char **tab, int lin, int col, int turn ,struct player *a){
-int i,j;
-a->ability.green=a->ability.yellow=a->ability.red=0;
-for(i=0; i<lin; ++i)
-  for(j=0; j<col; ++j)
-    switch(tab[i][j]){
-      case ' ': 
-        a->ability.green=1;
-        break;
-      case 'G':
-        a->ability.yellow=1;
-        break;
-      case 'Y':
-        a->ability.red=1;
-        break;
-    }
-if(turn>1)
-  a->ability.k_interrupt=1;
+    int i,j;
+    a->ability.green=a->ability.yellow=a->ability.red=0;
+    for(i=0; i<lin; ++i)
+        for(j=0; j<col; ++j)
+            switch(tab[i][j]){
+                case ' ': 
+                    a->ability.green=1;
+                break;
+
+                case 'G':
+                a->ability.yellow=1;
+                break;
+
+                case 'Y':
+                    a->ability.red=1;
+                break;
+            }
+    if(turn>1)
+        a->ability.k_interrupt=1;
 }
 
 
@@ -55,17 +57,17 @@ if(turn>1)
  * Escreve na consola, todas as jogadas que o jogador atual pode realizar
  *********/ 
 void show_plays(struct player a){
-printf("\n\nAs jogadas que pode fazer sao:\n"
-"%s%s%s",a.ability.green==1 ? "Adicionar uma peca verde numa celula vazia (G)\n" : "\0",
-a.ability.yellow==1 ? "Trocar uma peca verde por uma amarela (Y)\n" : "\0",
-a.ability.red==1 ? "Trocar uma peca amarela por uma vermelha (R)\n" : "\0");
-if(a.ability.rock!=0)
-  printf("Colocar uma pedra numa celula vazia (S) (%d restantes)\n",a.ability.rock);
-if(a.ability.lc!=0)
-  printf("Adicionar uma linha ou coluna (L ou C) (%d restantes) \n",a.ability.lc);
-if(a.ability.k_interrupt!=0)
-  printf("Ver as k jogadas anteriores(K)\n"
-  "Interromper o jogo para ser ou nao retomado posteriormente(I)\n");
+    printf("\n\nAs jogadas que pode fazer sao:\n"
+    "%s%s%s",a.ability.green==1 ? "Adicionar uma peca verde numa celula vazia (G)\n" : "\0",
+    a.ability.yellow==1 ? "Trocar uma peca verde por uma amarela (Y)\n" : "\0",
+    a.ability.red==1 ? "Trocar uma peca amarela por uma vermelha (R)\n" : "\0");
+    if(a.ability.rock==1)
+        printf("Colocar uma pedra numa celula vazia (S) (%d restantes)\n",a.ability.rock);
+    if(a.ability.lc!=0)
+        printf("Adicionar uma linha ou coluna (L ou C) (%d restantes) \n",a.ability.lc);
+    if(a.ability.k_interrupt!=0)
+        printf("Ver as k jogadas anteriores(K)\n"
+        "Interromper o jogo para ser ou nao retomado posteriormente(I)\n");
 }
 
 /**********
@@ -75,63 +77,68 @@ if(a.ability.k_interrupt!=0)
  *  Retorna 1 se a jogada for valida
  *********/ 
 static bool validate_play(struct player a,char play){
-switch(play){
-  case 'G':
-    if(a.ability.green==0){
-      printf(INVALiD_PLAY);
-      return 0;
-    }
-  break;  
-  case 'Y':
-    if(a.ability.yellow==0){
-      printf(INVALiD_PLAY);
-      return 0;
-    }
-  break; 
-  case 'R':
-    if(a.ability.red==0){
-      printf(INVALiD_PLAY);
-      return 0;
-    }
-  break;
-  case 'S':
-    if(a.ability.rock==0){
-      printf(INVALiD_PLAY);
-      return 0;
-    }
-  break;
+    switch(play){
+        case 'G':
+            if(a.ability.green==0){
+                printf(INVALiD_PLAY);
+                return 0;
+            }
+        break;
 
-  case 'L' :
-    if(a.ability.lc==0){
-      printf(INVALiD_PLAY);
-      return 0;
-    }
-  break;
+        case 'Y':
+            if(a.ability.yellow==0){
+                printf(INVALiD_PLAY);
+                return 0;
+            }
+        break; 
 
-  case 'C' :
-    if(a.ability.lc==0){
-      printf(INVALiD_PLAY);
-      return 0;
+        case 'R':
+            if(a.ability.red==0){
+                printf(INVALiD_PLAY);
+                return 0;
+            }
+        break;
+
+        case 'S':
+            if(a.ability.rock==0){
+                printf(INVALiD_PLAY);
+                return 0;
+            }
+        break;
+
+      case 'L' :
+            if(a.ability.lc==0){
+                printf(INVALiD_PLAY);
+                return 0;
+            }
+      break;
+
+      case 'C' :
+            if(a.ability.lc==0){
+                printf(INVALiD_PLAY);
+                return 0;
+            }
+      break;
+
+      case 'I' : 
+            if(a.ability.k_interrupt==0){
+                printf(INVALiD_PLAY);
+                return 0;
+            }
+      break;
+
+      case 'K' : 
+            if(a.ability.k_interrupt==0){
+                printf(INVALiD_PLAY);
+                return 0;
+            }
+      break;
+
+      default: 
+            printf("Por favor digite um carater valido\n");
+            return 0;
     }
-  break;
-  case 'I' : 
-  if(a.ability.k_interrupt==0){
-      printf(INVALiD_PLAY);
-      return 0;
-  }
-  break;
-  case 'K' : 
-    if(a.ability.k_interrupt==0){
-      printf(INVALiD_PLAY);
-      return 0;
-    }
-  break;
-  default: 
-    printf("Por favor digite um carater valido\n");
-    return 0;
-  break;
- }
-return 1;
+    return 1;
 }
 
 
@@ -142,18 +149,18 @@ return 1;
  *  Devolve essa jogada
  *********/ 
 char ask_play(struct player a){
-char play;
-bool flag;
-printf("\n\nDigite uma jogada das listadas acima: ");
-do{
-  scanf(" %c",&play);
-  if( ( flag=validate_play(a,play) )==0 ){
-    printf("Por favor digite uma jogada das listadas acima: ");
-    clean_stdin();
-  }
-}while(flag==0);
-clean_stdin();
-return play;
+    char play;
+    bool flag;
+    printf("\n\nDigite uma jogada das listadas acima: ");
+        do{
+            scanf(" %c",&play);
+            if( ( flag=validate_play(a,play) )==0 ){
+                printf("Por favor digite uma jogada das listadas acima: ");
+                clean_stdin();
+            }
+        }while(flag==0);
+        clean_stdin();
+        return play;
 }
 
 
@@ -163,19 +170,19 @@ return play;
  * Coloca as coordenadas inseridas em "place"
  */
 void ask_place(struct coordinates *place, int lin, int col){
-int flag=0;
-place->x=place->y=-1;
-printf("Digite as coordenadas do tabuleiro em que quer inserir a peca: ");
-do{
-  if( ( flag=scanf("%d%d",&place->x,&place->y) ) !=2){
-    printf("Digite as coordenadas no formato certo x y: ");
-    clean_stdin();
-    continue;
-  }
-  if(is_inside(*place,lin,col)==0)
-    printf("Digite coordenadas validas: ");
-  clean_stdin();
- }while(flag!=2 || is_inside(*place,lin,col)==0);
+    int flag=0;
+    place->x=place->y=-1;
+    printf("Digite as coordenadas do tabuleiro em que quer inserir a peca: ");
+    do{
+        if( ( flag=scanf("%d%d",&place->x,&place->y) ) !=2){
+            printf("Digite as coordenadas no formato certo x y: ");
+            clean_stdin();
+            continue;
+        }
+        if(is_inside(*place,lin,col)==0)
+            printf("Digite coordenadas validas: ");
+      clean_stdin();
+    }while(flag!=2 || is_inside(*place,lin,col)==0);
 }
 
 
@@ -188,40 +195,42 @@ do{
  * Retorna 1 e exibe uma mensagem de erro se a jogada for invalida.
  */
 bool interpret_play(char **tab, int lin, int col, char play,struct coordinates place, struct player *a){
---place.x; --place.y;
-switch(play){
-  case 'G': 
-    if(cell_has_piece(tab,' ',place)==0){ //se nao tiver ' ' nao se pode meter verde
-      printf(OCC_POS);
-      return 1;
-    }
-    tab[place.x][place.y]='G';
-    break;
-  case 'Y' : 
-    if(cell_has_piece(tab,'G',place)==0){
-      printf("Nessa posicao nao esta uma peca verde para ser trocada\n");
-      return 1;
-    }
-    tab[place.x][place.y]='Y';
-    break;
-  case 'R': 
-    if(cell_has_piece(tab,'Y',place)==0){
-      printf("Nessa posicao nao esta uma peca amarela para ser trocada\n");
-      return 1;
-    }
-    tab[place.x][place.y]='R';
-    break;
+    --place.x; --place.y;
+    switch(play){
+        case 'G': 
+            if(cell_has_piece(tab,' ',place)==0){ //se nao tiver ' ' nao se pode meter verde
+                printf(OCC_POS);
+                return 1;
+            }
+            tab[place.x][place.y]='G';
+        break;
 
-    case 'S': 
-    if(cell_has_piece(tab,' ',place)==0){
-      printf(OCC_POS);
-      return 1; 
-    }
-    tab[place.x][place.y]='S';
-    a->ability.rock-=1;
-    break;
-  }
-return 0;
+        case 'Y' : 
+            if(cell_has_piece(tab,'G',place)==0){
+                printf("Nessa posicao nao esta uma peca verde para ser trocada\n");
+                return 1;
+            }
+            tab[place.x][place.y]='Y';
+        break;
+
+        case 'R': 
+            if(cell_has_piece(tab,'Y',place)==0){
+                printf("Nessa posicao nao esta uma peca amarela para ser trocada\n");
+                return 1;
+            }
+            tab[place.x][place.y]='R';
+        break;
+
+        case 'S': 
+            if(cell_has_piece(tab,' ',place)==0){
+                printf(OCC_POS);
+                return 1; 
+            }
+            tab[place.x][place.y]='S';
+            a->ability.rock=0;
+        break;
+      }
+    return 0;
 }
 
 
@@ -235,17 +244,17 @@ return 0;
  * Em caso de erro retorna NULL
  */
 char **add_l_c(char ***tab, int *lin, int *col, char play, struct player *a){
-char **aux;
-if(play=='C'){
-  if( ( aux=add_col(*tab,*lin,col) )==NULL)
-    return NULL;
-  a->ability.lc-=1;
- }
-if(play=='L'){
-  if( ( aux=add_lin(*tab,lin,*col) )==NULL)
-    return NULL;
-  *tab=aux;
-  a->ability.lc-=1;
-}
+    char **aux;
+    if(play=='C'){
+        if( ( aux=add_col(*tab,*lin,col) )==NULL)
+            return NULL;
+        a->ability.lc-=1;
+    }
+    if(play=='L'){
+        if( ( aux=add_lin(*tab,lin,*col) )==NULL)
+            return NULL;
+        *tab=aux;
+        a->ability.lc-=1;
+    }
 return *tab;
 }

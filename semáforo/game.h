@@ -8,5 +8,5 @@
 
 char menu();
 void game(bool game_mode, bool resume);
-
+void rules();
 #endif

@@ -11,7 +11,7 @@ struct plays{ //cada membro representa uma jogada que um jogador pode realizar
   bool green;
   bool yellow;
   bool red;
-  int rock;
+  bool rock;
   int lc;
   bool k_interrupt;
 };
