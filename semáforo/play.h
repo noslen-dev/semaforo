@@ -3,10 +3,6 @@
 
 #include <stdbool.h>
 
-#define INVALiD_PLAY "Atualmente nao pode fazer essa jogada\n"
-
-#define OCC_POS "Escolheu uma posicao do tabuleiro ja ocupada\n"
-
 struct plays{ //cada membro representa uma jogada que um jogador pode realizar
   bool green;
   bool yellow;

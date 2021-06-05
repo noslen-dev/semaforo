@@ -20,7 +20,7 @@ static void ask_filename(char *filename){
 
 
 /****
- * static write_node_info_to_file(no atual)
+ * static void write_node_info_to_file(no da lista)
  * Baseado na informacao do no escreve informacao sobre a jogada realizada
  * no ficheiro apontado por fp.
  * O ficheiro ja vem aberto e nao e fechado pela funcao
@@ -36,32 +36,36 @@ static void write_node_info_to_file(struct list_node curr, FILE *fp){
 
 
 /*************
- *  void draw_tab_to_file(tabuleiro de jogo, numero de linhas, numero de colunas,
+ *  static void draw_tab_to_file(tabuleiro de jogo, numero de linhas, numero de colunas,
  *  ficheiro para escrita)
  *  Desenha o tabuleiro do jogo no ficheiro apontado por fp.
  *  O ficheiro ja vem aberto e nao e fechado
  ***************/
-void draw_tab_to_file(char **tab, int lin, int col, FILE *fp){
+static void draw_tab_to_file(char **tab, int lin, int col, FILE *fp){
     int i,j,aux;
-    for(i=0; i<lin; ++i){
-        fprintf(fp,"  %d ",i+1); 
-        for(j=0; j<col; ++j)
-            fprintf(fp," %c %c",tab[i][j],j+1==col ? ' ': '|'); 
-
-        if(i+1!=lin){
-            fprintf(fp,"\n    ");
-            for(aux=0; aux<col; ++aux)
-                if(aux+1!=col)
-                    fprintf(fp,"----");
-                else
-                    fprintf(fp,"---");
-                putc('\n',fp);
-        }
-    }
-
-    fprintf(fp,"\n  ");
+    fprintf(fp,"    ");
     for(i=0; i<col; ++i)
-      fprintf(fp,"   %d",i+1);
+        if(i+1!=col)
+            fprintf(fp,"----");
+        else
+            fprintf(fp,"-----");
+        putc('\n',fp);
+    for(i=0; i<lin; ++i){
+        fprintf(fp,"  %d ",i+1);
+        putc('|',fp);; 
+        for(j=0; j<col; ++j)
+            fprintf(fp," %c %c",tab[i][j],'|');
+            fprintf(fp,"\n    ");
+        for(aux=0; aux<col; ++aux)
+            if(aux+1!=col)
+                fprintf(fp,"----");
+            else
+                fprintf(fp,"-----");
+        putc('\n',fp);
+    }
+    fprintf(fp,"      ");
+    for(i=0; i<col; ++i)
+        fprintf(fp,"%d   ",i+1);
 }
 
 
@@ -106,14 +110,14 @@ bool export_states_txt(struct list_head *states, bool game_mode){
  * |************************************************************************|
  * |modo de jogo | jogador a | jogador b | linhas iniciais| colunas iniciais|
  * |lista com as sucessoes do tabuleiro(exeto a cabeca)                     |
- * |************************************************************************
+ * |*************************************************************************
  * Devolve 1 se o ficheiro foi criado com sucesso.
  * Devolve 0 se o ficheiro nao pode ser criado
  */ 
 bool export_bin(struct list_head states, struct player a, struct player b, int lin, int col, bool game_mode){
     FILE *fp;
     if( (fp=fopen("jogo.bin","wb"))==NULL ){
-        fprintf(stderr,"Erro ao criar o ficheiro que iria guardar o jogo\n");
+        fprintf(stderr,"Erro ao criar o ficheiro \"jogo.bin\" que iria guardar o jogo\n");
         return 0;
     }
     struct list_node *curr;
@@ -128,7 +132,7 @@ bool export_bin(struct list_head states, struct player a, struct player b, int l
         fwrite(curr,sizeof(struct list_node),1,fp);
     
     fclose(fp);
-    return 1; //sucesso
+    return 1; 
 }
 
 

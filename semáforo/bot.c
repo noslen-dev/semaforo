@@ -139,9 +139,10 @@ static void update_coord(char **tab, int lin, int col, char replace_piece ,int n
 
 /***
  * bool bot_plays(ponteiro para o tabuleiro de jogo, ponteiro para o numero de linhas, 
- * ponteiro para o numero de colunas, ponteiro para peca peca, ponteiro para coordenadas, 
+ * ponteiro para o numero de colunas, ponteiro para peca, ponteiro para coordenadas, 
  * ponteiro para jogador automatico)
- * Realiza uma jogada automaticamente.
+ * Realiza uma jogada automaticamente, e altera os parametros que foram necessarios alterar,
+ * conforme a natureza da jogada.
  * Devolve 1 se a jogada foi feita com sucesso.
  * Devolve 0 caso contrario(alocacao de linhas ou colunas falhou)
  */ 

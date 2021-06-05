@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <stdbool.h>
 #include "utils.h"
 #include "game.h"
 
@@ -46,6 +47,7 @@ int main(){
             if(op=='3')
                 rules();
         }while(op=='3');
+    
     printf("\n\nObrigado por jogar o jogo do semaforo!!!\n\n");
     return 0;
 }

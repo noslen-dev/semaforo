@@ -1,7 +1,6 @@
 #ifndef UTILS_H
 #define UTILS_H
 
-#include "play.h"
 
 // Inicializa o gerador de numeros aleatorios.
 // Esta funcao deve ser chamada apenas uma vez no inicio da execucao do programa

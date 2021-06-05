@@ -3,6 +3,8 @@
 #include "tab.h"
 #include "utils.h"
 
+#define INVALiD_PLAY "Atualmente nao pode fazer essa jogada\n"
+#define OCC_POS "Escolheu uma posicao do tabuleiro ja ocupada\n"
 
 /*******
  * static bool cell_has_piece(tabuleiro, peca, coordenadas)
@@ -23,57 +25,8 @@ static bool is_inside(struct coordinates place, int lin, int col){
 }
 
 /**********
- * void update_player(tabuleiro, numero de linhas, numero de colunas, turno atual, ponteiro para o jogador atual)
- * Percorre todo o tabuleiro e atualiza as habilidades do jogador recebido como argumento 
- * com um 0 ou 1
- * 0 indica que o jogador nao pode fazer essa jogada
- * 1 indica que o jogador pode fazer essa jogada
- ***********/ 
-void update_player(char **tab, int lin, int col, int turn ,struct player *a){
-    int i,j;
-    a->ability.green=a->ability.yellow=a->ability.red=0;
-    for(i=0; i<lin; ++i)
-        for(j=0; j<col; ++j)
-            switch(tab[i][j]){
-                case ' ': 
-                    a->ability.green=1;
-                break;
-
-                case 'G':
-                a->ability.yellow=1;
-                break;
-
-                case 'Y':
-                    a->ability.red=1;
-                break;
-            }
-    if(turn>1)
-        a->ability.k_interrupt=1;
-}
-
-
-/**********
- * void show_plays(jogador atual)
- * Escreve na consola, todas as jogadas que o jogador atual pode realizar
- *********/ 
-void show_plays(struct player a){
-    printf("\n\nAs jogadas que pode fazer sao:\n"
-    "%s%s%s",a.ability.green==1 ? "Adicionar uma peca verde numa celula vazia (G)\n" : "\0",
-    a.ability.yellow==1 ? "Trocar uma peca verde por uma amarela (Y)\n" : "\0",
-    a.ability.red==1 ? "Trocar uma peca amarela por uma vermelha (R)\n" : "\0");
-    if(a.ability.rock==1)
-        printf("Colocar uma pedra numa celula vazia (S) (%d restantes)\n",a.ability.rock);
-    if(a.ability.lc!=0)
-        printf("Adicionar uma linha ou coluna (L ou C) (%d restantes) \n",a.ability.lc);
-    if(a.ability.k_interrupt!=0)
-        printf("Ver as k jogadas anteriores(K)\n"
-        "Interromper o jogo para ser ou nao retomado posteriormente(I)\n");
-}
-
-/**********
- *  static bool validate_play(jogador atual, carater pressionado pelo utilizador)
- *  Retorna 0 se o carater pressionado pelo utilizador for invalido, ou se ele nao puder 
- *  realizar essa jogada e escreve uma mensagem de erro
+ *  static bool validate_play(jogador atual, carater que representa uma jogada)
+ *  Retorna 0 se "play" nao representar uma jogada valida, ou se o jogador nao puder realizar essa jogada
  *  Retorna 1 se a jogada for valida
  *********/ 
 static bool validate_play(struct player a,char play){
@@ -143,6 +96,56 @@ static bool validate_play(struct player a,char play){
 
 
 /**********
+ * void update_player(tabuleiro, numero de linhas, numero de colunas, turno atual, ponteiro para o jogador atual)
+ * Percorre todo o tabuleiro e atualiza as habilidades do jogador recebido como argumento 
+ * com um 0 ou 1
+ * 0 indica que o jogador nao pode fazer essa jogada
+ * 1 indica que o jogador pode fazer essa jogada
+ ***********/ 
+void update_player(char **tab, int lin, int col, int turn ,struct player *a){
+    int i,j;
+    a->ability.green=a->ability.yellow=a->ability.red=0;
+    for(i=0; i<lin; ++i)
+        for(j=0; j<col; ++j)
+            switch(tab[i][j]){
+                case ' ': 
+                    a->ability.green=1;
+                break;
+
+                case 'G':
+                a->ability.yellow=1;
+                break;
+
+                case 'Y':
+                    a->ability.red=1;
+                break;
+            }
+    if(turn>1)
+        a->ability.k_interrupt=1;
+}
+
+
+/**********
+ * void show_plays(jogador)
+ * Escreve na consola, todas as jogadas que o jogador atual pode realizar
+ *********/ 
+void show_plays(struct player a){
+    printf("\n\nAs jogadas que pode fazer sao:\n"
+    "%s%s%s",a.ability.green==1 ? "Adicionar uma peca verde numa celula vazia (G)\n" : "\0",
+    a.ability.yellow==1 ? "Trocar uma peca verde por uma amarela (Y)\n" : "\0",
+    a.ability.red==1 ? "Trocar uma peca amarela por uma vermelha (R)\n" : "\0");
+    if(a.ability.rock==1)
+        printf("Colocar uma pedra numa celula vazia (S) (%d restantes)\n",a.ability.rock);
+    if(a.ability.lc!=0)
+        printf("Adicionar uma linha ou coluna (L ou C) (%d restantes) \n",a.ability.lc);
+    if(a.ability.k_interrupt!=0)
+        printf("Ver as k jogadas anteriores(K)\n"
+        "Interromper o jogo para ser ou nao retomado posteriormente(I)\n");
+}
+
+
+
+/**********
  *  char ask_play(jogador)
  *  Pede por um carater ao utilizador até ele digitar um carater válido,
  *  ou seja, uma jogada que possa fazer no momento
@@ -166,7 +169,7 @@ char ask_play(struct player a){
 
 /*******
  * void ask_place(ponteiro para coordenadas, numero de linhas, numero de colunas)
- * Obriga o utilizador a introduzir coordenadas dentro do tabuleiro e num formato valido
+ * Obriga o utilizador a introduzir coordenadas que estejam dentro do tabuleiro, num formato valido
  * Coloca as coordenadas inseridas em "place"
  */
 void ask_place(struct coordinates *place, int lin, int col){
@@ -188,11 +191,11 @@ void ask_place(struct coordinates *place, int lin, int col){
 
 /*******
  * bool interpret_play(tabuleiro de jogo, numero de linhas, numero de colunas
- * ,peca, coordenadas dessa peca, jogador a ser alterado)
- * Recebe uma peca "play" e se for valida coloca-a no tabuleiro e decrementa as
- * habilidades do jogador, se for necessario.
+ * ,jogada, coordenadas de insercao de uma peca, ponteiro para jogador)
+ * Recebe uma jogada "play" e se for valida coloca no tabuleiro a peca que corresponde a essa jogada 
+ * e decrementa as habilidades do jogador, se for necessario.
  * Retorna 0 se a jogada for valida
- * Retorna 1 e exibe uma mensagem de erro se a jogada for invalida.
+ * Retorna 1 a jogada for invalida.
  */
 bool interpret_play(char **tab, int lin, int col, char play,struct coordinates place, struct player *a){
     --place.x; --place.y;
@@ -236,10 +239,9 @@ bool interpret_play(char **tab, int lin, int col, char play,struct coordinates p
 
 /*******
  * char ** add_l_c(endereco do tabuleiro de jogo, ponteiro para o numero de linhas, ponteiro para
- * o numero de colunas, peca, jogador a ser alterado)
+ * o numero de colunas, peca, ponteiro para jogador)
  * conforme o valor de "play"('C' ou 'L'), adiciona uma linha ou uma coluna e decrementa
  * a habilidade de inserir linhas ou colunas do jogador.
- * Se inserir uma linha atualiza o tabuleiro do jogo.
  * Em caso de sucesso devolve o tabuleiro do jogo.
  * Em caso de erro retorna NULL
  */
@@ -250,7 +252,7 @@ char **add_l_c(char ***tab, int *lin, int *col, char play, struct player *a){
             return NULL;
         a->ability.lc-=1;
     }
-    if(play=='L'){
+    else{ 
         if( ( aux=add_lin(*tab,lin,*col) )==NULL)
             return NULL;
         *tab=aux;

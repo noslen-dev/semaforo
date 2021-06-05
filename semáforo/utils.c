@@ -2,7 +2,6 @@
 #include <time.h>
 #include <stdio.h>
 #include "utils.h"
-#include "play.h"
 
 void initRandom(){
     srand(time(NULL));
