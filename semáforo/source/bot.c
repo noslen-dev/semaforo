@@ -20,7 +20,8 @@ static void shuffle_arr(char *play_arr, int dim){
 }
 
 /**********
- * static void update_bot(tabuleiro do jogo, numero de linhas, numero de colunas, ponteiro para jogador automatico)
+ * static void update_bot(tabuleiro do jogo, numero de linhas do tabuleiro, numero de colunas do tabuleiro, 
+ * ponteiro para o jogador automatico)
  * Percorre todo o tabuleiro e atualiza as habilidades do jogador automatico
  * com um 0 ou 1
  * 0 indica que o jogador nao pode fazer essa jogada
@@ -73,7 +74,8 @@ static char choose_play(struct player bot){
 }
 
 /**
- * static int count_pieces(tabuleiro , numero de linhas, numero de colunas, peca)
+ * static int count_pieces(tabuleiro de jogo , numero de linhas do tabuleiro, 
+ * numero de colunas do tabuleiro ,peca)
  * Devolve o numero de "piece" que existem no tabuleiro
  */ 
 static int count_pieces(char **tab, int lin, int col, char piece){
@@ -86,8 +88,8 @@ static int count_pieces(char **tab, int lin, int col, char piece){
 }
 
 /***
- * static int interpret_piece(tabuleiro de jogo, numero de linhas, numero de colunas, peca, ponteiro para 
- * peca a ser substituida)
+ * static int interpret_piece(tabuleiro de jogo, numero de linhas do tabuleiro, 
+ * numero de colunas do tabuleiro, peca, ponteiro para peca a ser substituida)
  * Conforme o valor presente em "piece" coloca em "replace_piece" o carater em que "piece" pode ser jogada
  * (ex: piece='G' entao replace_piece=' ').
  * Devolve o numero de "replace_piece" que existem no tabuleiro
@@ -114,8 +116,8 @@ static int interpret_piece(char **tab, int lin, int col, char piece, char *repla
 }
 
 /***
- * static void update_coord(tabuleiro, numero de linhas, numero de colunas, peca a ser substituida,
- * numero da peca a ser substituida, ponteiro para coordenadas )
+ * static void update_coord(tabuleiro de jogo, numero de linhas do tabuleiro,numero de colunas do tabuleiro, 
+ * peca a ser substituida, numero da peca a ser substituida, ponteiro para coordenadas de uma celula do tabuleiro )
  * Percorre o tabuleiro, encontra a "replace_piece" nº "n_piece" e guarda as suas coordenadas em "place"
  * Ex: se "replace_piece"=='G' e "n_piece"==2, a funcao coloca em "place" as coordenadas da segunda
  * peca 'G' do tabuleiro
@@ -135,13 +137,13 @@ static void update_coord(char **tab, int lin, int col, char replace_piece ,int n
 }
 
 /***
- * bool bot_plays(ponteiro para o tabuleiro de jogo, ponteiro para o numero de linhas, 
- * ponteiro para o numero de colunas, ponteiro para peca, ponteiro para coordenadas, 
- * ponteiro para jogador automatico)
+ * bool bot_plays(ponteiro para o tabuleiro de jogo, ponteiro para o numero de linhas do tabuleiro, 
+ * ponteiro para o numero de colunas do tabuleiro, ponteiro para peca, 
+ * ponteiro para coordenadas de uma celula do tabuleiro, ponteiro para jogador automatico)
  * Realiza uma jogada automaticamente, e altera os parametros que forem necessarios alterar,
  * conforme a natureza da jogada.
  * Devolve 1 se a jogada foi feita com sucesso.
- * Devolve 0 caso contrario(alocacao de linhas ou colunas falhou)
+ * Devolve 0 caso contrario(alocacao de linhas ou colunas falhou) e limpa o tabuleiro de jogo
  */ 
 bool bot_plays(char ***tab, int *lin, int *col, char *piece, struct coordinates *place, struct player *bot){
     int n_piece;
@@ -150,7 +152,7 @@ bool bot_plays(char ***tab, int *lin, int *col, char *piece, struct coordinates 
     *piece=choose_play(*bot);
     if(*piece!='L' && *piece!='C'){
         n_piece=interpret_piece(*tab, *lin, *col, *piece,&replace_piece);
-        n_piece=intUniformRnd(1,n_piece); 
+        n_piece=intUniformRnd(1,n_piece);
         update_coord(*tab, *lin, *col, replace_piece, n_piece, place);
         (*tab)[place->x][place->y]=*piece;
         if(*piece=='S')

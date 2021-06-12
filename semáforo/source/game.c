@@ -324,7 +324,6 @@ void game(bool game_mode, bool resume){
     
       if(game_mode==BOT_GAME && aux==&b){ //vez do bot
             if( bot_plays(&tab,&lin,&col,&piece,&place,aux)==0 ){ //falhamos a adicionar linhas ou colunas a tab
-                free(tab);
                 free_head_and_tab_in_head(states,curr->lin);
                 return ;    
             }
@@ -386,6 +385,9 @@ void game(bool game_mode, bool resume){
         
     if( export_states_txt(states,game_mode)==0 )
         printf("O seu jogo nao sera guardado num ficheiro .txt\n");
+
     free_head_and_tab_in_head(states,curr->lin);
 }
+
+
 

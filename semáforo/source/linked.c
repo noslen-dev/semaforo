@@ -46,7 +46,7 @@ bool reset_tab_in_head(struct list_head *head, int lin){
     char **aux;
     if( ( aux=create_tab_fixed_lc(head->lin,head->col) )==NULL ){ //resetar a cabeca
         fprintf(stderr,ALLOCATION_ERROR_LINKED);
-        free_head_and_tab_in_head(head,lin);  
+        free_head_and_tab_in_head(head,lin);  //o tabuleiro pode estar alterado, temos de passar as linhas atuais para o limpar
         return 0;
     }
     head->tab=aux;
@@ -189,7 +189,7 @@ bool place_piece_in_head_tab(struct list_head *head, struct list_node curr){
 /**
  * bool show_k_prev(numero de jogadas anteriores, cabeca da lista, no que representa o turno atual do jogo)
  * O "k" que entra nesta funcao e sempre valido
- * Mostra como estava o tabuleiro e informacao sobre cada jogada realizada nos "k" turnos anteriores
+ * Mostra como estava o tabuleiro e informacao sobre cada jogada realizada, nos "k" turnos anteriores
  * Devolve 0 caso uma alocacao falhe e limpa a lista por completo 
  * Devolve 1 em caso de sucesso
 */
@@ -197,7 +197,7 @@ bool show_k_prev(int k, struct list_head *head, struct list_node *end){
     struct list_node *curr;
     for(curr=head->next; curr!=NULL  ;curr=curr->next){
         if( place_piece_in_head_tab(head,*curr)==0 )
-            return 0;// lista ja esta limpa
+            return 0;
         if(end->turn+1-curr->turn<=k){
             write_info(*curr);
             draw_tab(head->tab,curr->lin,curr->col);
