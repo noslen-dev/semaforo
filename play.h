@@ -27,6 +27,6 @@ void show_plays(struct player a);
 char ask_play(struct player a);
 bool interpret_play(char **tab, int lin, int col, char play,struct coordinates place, struct player *a);
 void ask_place(struct coordinates *place, int lin, int col);
-char **add_l_c(char ***tab, int *lin, int *col, char play, struct player *a);
+char **add_l_c(char **tab, int *lin, int *col, char play, struct player *a);
 
 #endif

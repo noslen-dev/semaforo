@@ -8,10 +8,11 @@
 
 
 /****
- * static void free_list(cabeca da lista)
- * Liberta a lista por completo
+ * static void free_head_and_nodes(cabeca da lista)
+ * Liberta todos os nos da lista e a sua cabeca
+ * Nao liberta o tabuleiro que esta na cabeca da lista
  */ 
-static void free_list(struct list_head *head){
+static void free_head_and_nodes(struct list_head *head){
     struct list_node *curr, *next;
     for(curr=next=head->next; curr!=NULL; curr=next){
         next=curr->next;
@@ -22,10 +23,10 @@ static void free_list(struct list_head *head){
 
 
 /****
- * void free_head_and_tab_in_head(cabeca da lista, numero de linhas do tabuleiro presente na cabeca da lista)
+ * void free_list_and_tab_in_head(cabeca da lista, linhas do tabuleiro presente na cabeca da lista)
  * Limpa todos os nos da lista e limpa a cabeca e o seu tabuleiro
  */ 
-void free_head_and_tab_in_head(struct list_head *head, int lin){
+void free_list_and_tab_in_head(struct list_head *head, int lin){
     struct list_node *curr, *next;
     for(curr=next=head->next; curr!=NULL; curr=next){ //limpa os nos
         next=curr->next;
@@ -33,24 +34,6 @@ void free_head_and_tab_in_head(struct list_head *head, int lin){
     }
     free_tab(head->tab,lin); //limpa o tabuleiro da cabeca
     free(head); //limpa a cabeca
-}
-
-/***
- * bool reset_tab_in_head(cabeca da lista, linhas do tabuleiro atual)
- * Faz com que o tabuleiro presente em head, volte ao estado em que estava antes de
- * comecar o jogo.
- * Se uma alocacao falhar limpa a lista por completo e devolve 0
- * Se tudo correr bem devolve 1
- */ 
-bool reset_tab_in_head(struct list_head *head, int lin){
-    char **aux;
-    if( ( aux=create_tab_fixed_lc(head->lin,head->col) )==NULL ){ //resetar a cabeca
-        fprintf(stderr,ALLOCATION_ERROR_LINKED);
-        free_head_and_tab_in_head(head,lin);  //o tabuleiro pode estar alterado, temos de passar as linhas atuais para o limpar
-        return 0;
-    }
-    head->tab=aux;
-    return 1;
 }
 
 
@@ -72,9 +55,9 @@ static void write_info(struct list_node curr){
 /*****
  * struct list_head *create_head(numero de linhas do tabuleiro de jogo inicial, 
  * numero de colunas do tabuleiro de jogo inicial)
- * Cria a cabeca da lista ligada, que ira guardar os estados do tabuleiro
+ * Cria a cabeca da lista ligada
  * Faz o membro "tab" apontar para um
- * tabuleiro de dimensao "lin" x "col" e guarda as dimensoes desse tabuleiro nos membros respetivos
+ * tabuleiro de dimensao "lin" x "col" e guarda as dimensoes desse tabuleiro nos membros respetivos da cabeca
  * Devolve a cabeca em caso de sucesso.
  * Devolve NULL em caso de erro
  * Esta funcao nao deixa memoria por libertar
@@ -99,16 +82,17 @@ struct list_head * create_head(int lin, int col){
 /*****
  * bool add_node_in_head(cabeca da lista, linhas do tabuleiro de jogo atual, colunas do tabuleiro de jogo atual, 
  * nome do jogador atual, peca colocada, coordenadas em que a peca foi colocada)
- * Adiciona e inicializa com informacao recebida por argumento um novo no. Este no e adcionado a cabeca da lista
+ * Adiciona e inicializa com informacao recebida por argumento um novo no 
+ * Este no e adicionado a cabeca da lista
  * Este no representa o turno 1.
- * Limpa a lista por completo e devolve 0 em caso de erro 
+ * Limpa a lista e o tabuleiro da cabeca e devolve 0 em caso de erro 
  * Devolve 1 em caso de sucesso.
  */ 
 bool add_node_in_head(struct list_head *head, int lin, int col, char name, char piece ,struct coordinates place){
     struct list_node * new_node;
     if( ( new_node=malloc(sizeof(struct list_node)) )==NULL ){
         fprintf(stderr,ALLOCATION_ERROR_LINKED);
-        free_head_and_tab_in_head(head,head->lin); //liberta head e o seu tabuleiro
+        free_list_and_tab_in_head(head,head->lin); //a meio do jogo o tab na cabeca esta sempre igual ao tab inicial
         return 0;
     }
     new_node->lin=lin; new_node->col=col;
@@ -128,15 +112,15 @@ bool add_node_in_head(struct list_head *head, int lin, int col, char name, char 
 /*****
  * bool add_node_to_node(cabeca da lista, no anterior, linhas do tabuleiro de jogo atual, colunas do tabuleiro de jogo atual, 
  * nome do jogador atual, peca colocada, coordenadas da peca colocada)
- * Adiciona e inicializa com informacao recebida por argumento um novo no, este no e inserido apos o no anterior
- * Devolve 0 em caso de erro e limpa a lista por completo.
+ * Adiciona e inicializa com informacao recebida por argumento um novo no, este no e inserido apos o no anterior("prev")
+ * Devolve 0 em caso de erro e limpa a lista e o tabuleiro da cabeca.
  * Devolve 1 em caso de sucesso
  */ 
 bool add_node_to_node(struct list_head *head,struct list_node *prev, int lin, int col, char name, char piece, struct coordinates place){
     struct list_node * new_node;
     if( ( new_node=malloc(sizeof(struct list_node)) )==NULL ){
         fprintf(stderr,ALLOCATION_ERROR_LINKED);
-        free_head_and_tab_in_head(head,prev->lin); //o tabuleiro atual pode ter as linhas aumentadas
+        free_list_and_tab_in_head(head, prev->lin); //o tab em head esta sempre resetado a meio do jogo 
         return 0;
     }
     new_node->lin=lin; new_node->col=col;
@@ -152,12 +136,11 @@ return 1;
 }
 
 
-
 /***
- * bool place_piece_in_head_tab(cabeca da lista, no que representa o turno atual do jogo)
- * Com a informacao presente em "curr", atualiza o tabuleiro da cabeca
- * Se alguma alocacao falhar, a funcao limpa a lista por completo.
- * Devolve 1 se as alocacoes foram um sucesso.
+ * bool place_piece_in_head_tab(cabeca da lista, no da lista)
+ * Realiza a jogada presente em "curr" alterando assim o tabuleiro da cabeca da lista
+ * Se alguma alocacao falhar, a funcao limpa a lista e o tabuleiro da cabeca
+ * Devolve 1 se as alocacoes foram um sucesso
  * Devolve 0 se alguma alocacao falhou
  */ 
 bool place_piece_in_head_tab(struct list_head *head, struct list_node curr){
@@ -170,19 +153,38 @@ bool place_piece_in_head_tab(struct list_head *head, struct list_node curr){
             --curr.col; // o numero ja esta certo, porem "add_col" ira aumentar curr.col
             if( ( add_col(head->tab,curr.lin,&curr.col) )==NULL ){
                 fprintf(stderr,"Erro ao realizar uma jogada na cabeca da lista\n");
-                free_list(head); //libertar a lista, o tabuleiro ja esta limpo
+                free_head_and_nodes(head); //libertar a lista, o tabuleiro ja esta limpo
                 return 0;
             }
         }
-      else{
-          --curr.lin; //o numero ja esta certo, porem "add_lin" ira aumentar curr.lin
-          if( (head->tab=add_lin(head->tab,&curr.lin,curr.col) )==NULL ){
-          fprintf(stderr,"Erro ao realizar uma jogada na cabeca da lista\n");
-          free_list(head); //libertar a lista, o tabuleiro ja esta limpo
-          return 0;
-          }
+        else{
+            --curr.lin; //o numero ja esta certo, porem "add_lin" ira aumentar curr.lin
+            if( (head->tab=add_lin(head->tab,&curr.lin,curr.col) )==NULL ){// se falhar, head->tab ficara limpo
+            fprintf(stderr,"Erro ao realizar uma jogada na cabeca da lista\n");
+            free_head_and_nodes(head);
+            return 0;
+        }
       }
     return 1; 
+}
+
+/***
+ * bool reset_tab_in_head(cabeca da lista, linhas do tabuleiro presente na cabeca da lista)
+ * Faz com que o tabuleiro presente na cabeca da lista, volte ao estado em que estava antes de
+ * comecar o jogo
+ * Se uma alocacao falhar limpa a lista e o tabuleiro da cabeca e devolve 0
+ * Se tudo correr bem devolve 1
+ */ 
+bool reset_tab_in_head(struct list_head *head, int lin){
+    char **aux;
+    if( ( aux=create_tab_fixed_lc(head->lin,head->col) )==NULL ){ //resetar a cabeca
+        fprintf(stderr,ALLOCATION_ERROR_LINKED);
+        free_list_and_tab_in_head(head,lin);  //o tabuleiro pode estar alterado, temos de passar as linhas atuais para o limpar
+        return 0;
+    }
+    free_tab(head->tab,lin); //limpar o tabuleiro que ja esta na cabeca
+    head->tab=aux;//atualizar esse tabuleiro
+    return 1;
 }
 
 
@@ -190,7 +192,7 @@ bool place_piece_in_head_tab(struct list_head *head, struct list_node curr){
  * bool show_k_prev(numero de jogadas anteriores, cabeca da lista, no que representa o turno atual do jogo)
  * O "k" que entra nesta funcao e sempre valido
  * Mostra como estava o tabuleiro e informacao sobre cada jogada realizada, nos "k" turnos anteriores
- * Devolve 0 caso uma alocacao falhe e limpa a lista por completo 
+ * Devolve 0 caso uma alocacao falhe e limpa a lista e o tabuleiro da cabeca 
  * Devolve 1 em caso de sucesso
 */
 bool show_k_prev(int k, struct list_head *head, struct list_node *end){

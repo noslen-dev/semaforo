@@ -28,11 +28,11 @@ static void rules_to_txt(){
     "1.Colocar uma peca verde numa celula vazia\n"
     "2.Trocar uma peca verde por uma amarela\n"
     "3.Trocar uma peca amarela por uma vermelha\n");
-    fprintf(fp,"O numero destas pecas e ilimitado");
+    fprintf(fp,"O numero destas pecas e ilimitado.");
     fprintf(fp,"\n\nExistem ainda 2 jogadas \"especiais\" que ambos os jogadores podem realizar:\n\n"
     "4.Colocar uma pedra numa celula vazia. Cada jogador pode no maximo colocar 1 pedra numa celula vazia"
     " por jogo.\nA colocacao desta pedra inviabiliza que o jogo possa terminar por preenchimento da linha,"
-    " coluna e diagonal afetada\n"
+    " coluna e diagonal afetada.\n"
     "5.Adicionar uma linha ou uma coluna vazia ao final do tabuleiro. Por jogo cada jogador pode realizar"
     " esta jogada 2 vezes.");
     fprintf(fp,"\n\nO jogo esta feito de forma a ser intuitivo e facil de jogar, por esse motivo, o programa"
@@ -41,12 +41,12 @@ static void rules_to_txt(){
     " sua peca seja inserida.\nO programa ira guia-lo em todos os seus pacos!");
     fprintf(fp,"\n\nEm termos de regras do jogo esta praticamente tudo dito, vale a pena salientar que,"
     "pode jogar contra outra pessoa(na mesma maquina)\nou jogar o jogo contra o computador(opcoes que"
-    " pode escolher no menu principal)");
+    " pode escolher no menu principal).");
     fprintf(fp,"\n\nA meio do jogo podera tambem interromper o jogo para o poder continuar mais tarde,e se o fizer, o jogo sera guardado\n"
     "num ficheiro com o nome \"jogo.bin\", e desde que nao apague este ficheiro, podera fechar a aplicacao\n"
-    "e, da proxima vez que a iniciar, o programa dar-lhe-a a opcao de retomar o seu jogo anterior");
+    "e, da proxima vez que a iniciar, o programa dar-lhe-a a opcao de retomar o seu jogo anterior.");
     fprintf(fp,"\n\nNo final do jogo, desenhos do tabuleiro e informacao sobre as jogadas serao escritas"
-    " num ficheiro .txt, para que possa rever o seu jogo");
+    " num ficheiro .txt, para que possa rever o seu jogo.");
     fclose(fp);
 }
 
@@ -60,7 +60,7 @@ void rules(){
     printf("\n\n======== Regras ========\n\n");
     printf("Bem vindo ao jogo do semaforo!!\n\n"
     "Nesta seccao iremos explicar as regras do jogo brevemente para que possa comecar a jogar o mais cedo"
-    " possivel. Daqui a 3 minutos estara pronto para comecar a jogar!\n\n\n");
+    " possivel.\nDaqui a 3 minutos estara pronto para comecar a jogar!\n\n\n");
     printf("O jogo do semaforo tem lugar num tabuleiro dividido em celulas. No inicio o tabuleiro esta vazio"
     " e os jogadores,\njogador A e jogador B, ao longo do jogo, alternadamente vao colocando pecas verdes(G)," 
     " amarelas(Y) ou vermelhas(R).\n"
@@ -69,11 +69,11 @@ void rules(){
     "1.Colocar uma peca verde numa celula vazia\n"
     "2.Trocar uma peca verde por uma amarela\n"
     "3.Trocar uma peca amarela por uma vermelha\n");
-    printf("O numero destas pecas e ilimitado");
+    printf("O numero destas pecas e ilimitado.");
     printf("\n\nExistem ainda 2 jogadas \"especiais\" que ambos os jogadores podem realizar:\n\n"
     "4.Colocar uma pedra numa celula vazia. Cada jogador pode no maximo colocar 1 pedra numa celula vazia"
     " por jogo.\nA colocacao desta pedra inviabiliza que o jogo possa terminar por preenchimento da linha,"
-    " coluna e diagonal afetada\n"
+    " coluna e diagonal afetada.\n"
     "5.Adicionar uma linha ou uma coluna vazia ao final do tabuleiro. Por jogo cada jogador pode realizar"
     " esta jogada 2 vezes.");
     printf("\n\nO jogo esta feito de forma a ser intuitivo e facil de jogar, por esse motivo, o programa"
@@ -82,12 +82,12 @@ void rules(){
     " sua peca seja inserida.\nO programa ira guia-lo em todos os seus pacos!");
     printf("\n\nEm termos de regras do jogo esta praticamente tudo dito, vale a pena salientar que,"
     "pode jogar contra outra pessoa(na mesma maquina)\nou jogar o jogo contra o computador(opcoes que"
-    " pode escolher no menu principal)");
+    " pode escolher no menu principal).");
     printf("\n\nA meio do jogo podera tambem interromper o jogo para o poder continuar mais tarde,e se o fizer, o jogo sera guardado\n"
     "num ficheiro com o nome \"jogo.bin\", e desde que nao apague este ficheiro, podera fechar a aplicacao\n"
-    "e, da proxima vez que a iniciar, o programa dar-lhe-a a opcao de retomar o seu jogo anterior");
+    "e, da proxima vez que a iniciar, o programa dar-lhe-a a opcao de retomar o seu jogo anterior.");
     printf("\n\nNo final do jogo, desenhos do tabuleiro e informacao sobre as jogadas serao escritas"
-    " num ficheiro .txt, para que possa rever o seu jogo");
+    " num ficheiro .txt, para que possa rever o seu jogo.");
     printf("\n\nAgora que ja sabe as regras esta pronto para jogar! Divirta-se!!!");
     printf("\n\n\nDeseja guardar estas regras num ficheiro de texto para as poder consultar a meio do jogo?\n");
     do{
@@ -126,8 +126,6 @@ char menu(){
 }
 
 
-
-
 /*********
  * static void init_player(ponteiro para jogador, carater que representa o nome do jogador)
  * Incializa as jogadas ,que nao dependem do estado do tabuleiro, do jogador recebido por referencia
@@ -159,8 +157,8 @@ static bool check_victory(char **tab, int lin, int col, struct player a){
 
 /*********
  * static int get_k(turno atual do jogo)
- * Obriga o utilizador a introduzir um numero de jogadas anteriores para visualizar valido(in [1, "turn"-1]).
- * devolve o numero inserido pelo utilizador.
+ * Obriga o utilizador a introduzir um numero de jogadas anteriores para visualizar valido(in [1, "turn"-1])
+ * devolve o numero inserido pelo utilizador
  */ 
 static int get_k(int turn){
     int k;
@@ -249,16 +247,16 @@ static int load_tab_list(char ***tab, int *lin, int *col, struct list_head **sta
         }
     }
 
-    *lin=curr->lin; *col=curr->col;
+    *lin=curr->lin; *col=curr->col; //linhas e colunas atuais do jogo
     *end=curr;
 
     if( ( *tab=create_tab_fixed_lc(*lin,*col) )==NULL ){
-        free_head_and_tab_in_head(*states,curr->lin); //antes do reset o tab em states esta todo alterado
+        free_list_and_tab_in_head(*states,*lin); //antes do reset, o tab em states esta todo alterado
         fclose(fp);
         return 0;
     }
     tab_copy( (*states)->tab,*tab,*lin,*col);
-    if(reset_tab_in_head(*states,*lin)==0 ){
+    if(reset_tab_in_head(*states,*lin)==0 ){ //o tab em head esta alterado
         fclose(fp);
         return 0;
     }
@@ -281,9 +279,9 @@ bool player_plays(char ***tab, int *lin, int *col, struct coordinates *place, st
     if(*piece!='K' && *piece!='L' && *piece!='C' && *piece!='I') //carateres nao colocaveis
         do{
             ask_place(place,*lin,*col);  
-        }while(interpret_play(*tab,*lin,*col,*piece,*place,aux)==1);
+        }while(interpret_play(*tab,*lin,*col,*piece,*place,aux)==0);
     if(*piece=='L' || *piece=='C')
-        if( add_l_c(tab, lin, col,*piece,aux)==NULL)
+        if( (*tab=add_l_c(*tab, lin, col,*piece,aux) )==NULL)
             return 0;
 return 1;
 }
@@ -323,8 +321,8 @@ void game(bool game_mode, bool resume){
             aux=&a;
     
       if(game_mode==BOT_GAME && aux==&b){ //vez do bot
-            if( bot_plays(&tab,&lin,&col,&piece,&place,aux)==0 ){ //falhamos a adicionar linhas ou colunas a tab
-                free_head_and_tab_in_head(states,curr->lin);
+            if( bot_plays(&tab,&lin,&col,&piece,&place,aux)==0 ){  
+                free_list_and_tab_in_head(states, states->lin); //o tab na cabeca esta sempre resetado a meio do jogo
                 return ;    
             }
             show_bot_play(*aux,piece,place);
@@ -335,14 +333,14 @@ void game(bool game_mode, bool resume){
 
       else{ //jogador humano
             if( player_plays(&tab,&lin,&col,&place,aux,turn,&piece)==0 ){
-                free_head_and_tab_in_head(states,curr->lin);
+                free_list_and_tab_in_head(states,states->lin);
                 return ;
             }
             if(piece=='K'){
                 k=get_k(turn);
                 printf("\n\nAs %d jogadas anteriores foram: \n\n",k);
                 if( show_k_prev(k,states,curr)==0 ){
-                    free(tab); 
+                    free_tab(tab,lin); 
                     return ;
                 }
                 printf("Pressione a tecla ENTER para voltar ao jogo: ");
@@ -352,10 +350,10 @@ void game(bool game_mode, bool resume){
             if(piece=='I'){
                 printf("\nO jogo ira terminar mas sera guardado num ficheiro para o poder continuar"
                 " posteriormente\n");
-                if( export_bin(*states,a,b,states->lin,states->col,game_mode)==0 )
-                    printf("O seu jogo nao sera guardado num ficheiro .bin\n");
+                if( export_bin(*states,a,b,game_mode)==0 )
+                    printf("\n\nO seu jogo nao sera guardado num ficheiro .bin\n");
                 free_tab(tab,lin);
-                free_head_and_tab_in_head(states,curr->lin); 
+                free_list_and_tab_in_head(states,states->lin); 
                 return ;
             }
       }
@@ -384,9 +382,9 @@ void game(bool game_mode, bool resume){
         remove("jogo.bin"); //apagar o jogo anterior
         
     if( export_states_txt(states,game_mode)==0 )
-        printf("O seu jogo nao sera guardado num ficheiro .txt\n");
-
-    free_head_and_tab_in_head(states,curr->lin);
+        printf("\n\nO seu jogo nao sera guardado num ficheiro .txt\n"); //lista ja esta limpa
+    else
+        free_list_and_tab_in_head(states,lin); //tab na cabeca esta alterado
 }
 
 

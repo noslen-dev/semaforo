@@ -1,12 +1,12 @@
 #include <stdio.h>
 #include "play.h"
-#include "bot.h"
 #include "utils.h"
+#include "bot.h"
 
 
 /***
  * static void shuffle_arr(array de carateres, dimensao do array)
- * Baralha o array recebido
+ * Baralha o array recebido por referencia
  */ 
 static void shuffle_arr(char *play_arr, int dim){
     char tmp;
@@ -20,14 +20,13 @@ static void shuffle_arr(char *play_arr, int dim){
 }
 
 /**********
- * static void update_bot(tabuleiro do jogo, numero de linhas do tabuleiro, numero de colunas do tabuleiro, 
+ * static void update_bot(tabuleiro de jogo, numero de linhas do tabuleiro, numero de colunas do tabuleiro, 
  * ponteiro para o jogador automatico)
- * Percorre todo o tabuleiro e atualiza as habilidades do jogador automatico
- * com um 0 ou 1
+ * Percorre todo o tabuleiro e atualiza as jogadas que o jogador automatico pode realizar com um 0 ou 1
  * 0 indica que o jogador nao pode fazer essa jogada
  * 1 indica que o jogador pode fazer essa jogada
  ***********/ 
-static void update_bot(char **tab, int lin, int col,struct player *bot){
+static void update_bot(char **tab, int lin, int col, struct player *bot){
     int i,j;
     bot->ability.green=bot->ability.yellow=bot->ability.red=0;
     for(i=0; i<lin; ++i)
@@ -48,7 +47,7 @@ static void update_bot(char **tab, int lin, int col,struct player *bot){
 
 /**
  * static char choose_play(jogador automatico)
- * Das jogadas que o jogador pode fazer, e escolhida uma e devolvida
+ * Das jogadas que o jogador automatico pode fazer, e escolhida uma e devolvida
  */ 
 static char choose_play(struct player bot){
     char play_arr[6]; //6 carateres possiveis
@@ -75,7 +74,7 @@ static char choose_play(struct player bot){
 
 /**
  * static int count_pieces(tabuleiro de jogo , numero de linhas do tabuleiro, 
- * numero de colunas do tabuleiro ,peca)
+ * numero de colunas do tabuleiro ,peca de jogo)
  * Devolve o numero de "piece" que existem no tabuleiro
  */ 
 static int count_pieces(char **tab, int lin, int col, char piece){
@@ -89,7 +88,7 @@ static int count_pieces(char **tab, int lin, int col, char piece){
 
 /***
  * static int interpret_piece(tabuleiro de jogo, numero de linhas do tabuleiro, 
- * numero de colunas do tabuleiro, peca, ponteiro para peca a ser substituida)
+ * numero de colunas do tabuleiro, peca de jogo, ponteiro para peca a ser substituida)
  * Conforme o valor presente em "piece" coloca em "replace_piece" o carater em que "piece" pode ser jogada
  * (ex: piece='G' entao replace_piece=' ').
  * Devolve o numero de "replace_piece" que existem no tabuleiro
@@ -117,7 +116,7 @@ static int interpret_piece(char **tab, int lin, int col, char piece, char *repla
 
 /***
  * static void update_coord(tabuleiro de jogo, numero de linhas do tabuleiro,numero de colunas do tabuleiro, 
- * peca a ser substituida, numero da peca a ser substituida, ponteiro para coordenadas de uma celula do tabuleiro )
+ * peca a ser substituida, numero da peca a ser substituida, ponteiro para coordenadas de uma celula do tabuleiro)
  * Percorre o tabuleiro, encontra a "replace_piece" nº "n_piece" e guarda as suas coordenadas em "place"
  * Ex: se "replace_piece"=='G' e "n_piece"==2, a funcao coloca em "place" as coordenadas da segunda
  * peca 'G' do tabuleiro
@@ -138,7 +137,7 @@ static void update_coord(char **tab, int lin, int col, char replace_piece ,int n
 
 /***
  * bool bot_plays(ponteiro para o tabuleiro de jogo, ponteiro para o numero de linhas do tabuleiro, 
- * ponteiro para o numero de colunas do tabuleiro, ponteiro para peca, 
+ * ponteiro para o numero de colunas do tabuleiro, ponteiro para peca de jogo, 
  * ponteiro para coordenadas de uma celula do tabuleiro, ponteiro para jogador automatico)
  * Realiza uma jogada automaticamente, e altera os parametros que forem necessarios alterar,
  * conforme a natureza da jogada.
@@ -159,9 +158,9 @@ bool bot_plays(char ***tab, int *lin, int *col, char *piece, struct coordinates 
             bot->ability.rock=0;
     }
     else
-        if( add_l_c(tab, lin, col,*piece,bot)==NULL)
+        if( (*tab=add_l_c(*tab, lin, col,*piece,bot) )==NULL)
             return 0;
-    place->x+=1;
+    place->x+=1; //como se fossem inseridas pelo utilizador
     place->y+=1;
 return 1; 
 }

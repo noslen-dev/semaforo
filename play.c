@@ -7,27 +7,27 @@
 #define OCC_POS "Escolheu uma posicao do tabuleiro ja ocupada\n"
 
 /*******
- * static bool cell_has_piece(tabuleiro de jogo, peca, coordenadas de uma celula do tabuleiro)
+ * static bool cell_has_piece(tabuleiro de jogo, peca de jogo, coordenadas de uma celula do tabuleiro)
  * Retorna 1 se "piece" estiver na posicao "place"
  * Retorna 0 caso contrario
  *******/
 static bool cell_has_piece(char **tab, char piece ,struct coordinates place){
-    return tab[place.x][place.y]==piece ? 1 : 0;
+    return tab[place.x][place.y]==piece;
 }
 
 /*******
- * static bool is_inside(coordenadas de uma celula do tabuleiro, numero de linhas do tabuleiro, 
+ * static bool is_valid_place(coordenadas de uma celula do tabuleiro, numero de linhas do tabuleiro, 
  * numero de colunas do tabuleiro)
  * Retorna 1 se "place" representar uma coordenada de uma celula do tabuleiro
  * Retorna 0 caso contrario
  */
-static bool is_inside(struct coordinates place, int lin, int col){
-    return place.x<=lin && place.x>=1 && place.y<=col && place.y>=1 ? 1 : 0;
+static bool is_valid_place(struct coordinates place, int lin, int col){
+    return place.x<=lin && place.x>=1 && place.y<=col && place.y>=1;
 }
 
 /**********
- *  static bool validate_play(jogador atual, carater que representa uma jogada)
- *  Retorna 0 se "play" nao representa uma jogada valida, ou se o jogador atual nao puder realizar essa jogada
+ *  static bool validate_play(jogador, carater que representa uma jogada)
+ *  Retorna 0 se "play" nao representar uma jogada valida, ou se o jogador nao puder realizar essa jogada
  *  Retorna 1 se a jogada for valida
  *********/ 
 static bool validate_play(struct player a, char play){
@@ -98,9 +98,8 @@ static bool validate_play(struct player a, char play){
 
 /**********
  * void update_player(tabuleiro de jogo, numero de linhas do tabuleiro, numero de colunas do tabuleiro
- * turno atual, ponteiro para o jogador atual)
- * Percorre todo o tabuleiro e atualiza as jogadas do jogador recebido como argumento 
- * com um 0 ou 1
+ * turno do jogo, ponteiro para o jogador atual)
+ * Percorre todo o tabuleiro e atualiza as jogadas do jogador recebido por referencia com um 0 ou 1
  * 0 indica que o jogador nao pode fazer essa jogada
  * 1 indica que o jogador pode fazer essa jogada
  ***********/ 
@@ -129,7 +128,7 @@ void update_player(char **tab, int lin, int col, int turn ,struct player *a){
 
 /**********
  * void show_plays(jogador)
- * Escreve na consola, todas as jogadas que o jogador atual pode realizar
+ * Escreve na consola, todas as jogadas que o jogador pode realizar
  *********/ 
 void show_plays(struct player a){
     printf("\n\nAs jogadas que pode fazer sao:\n"
@@ -146,24 +145,23 @@ void show_plays(struct player a){
 }
 
 
-
 /**********
  *  char ask_play(jogador atual)
- *  Pede por um carater ao utilizador até ele digitar um carater válido,
+ *  Pede por um carater ao utilizador até ele digitar um carater valido,
  *  ou seja, uma jogada que o jogador atual possa fazer no momento
- *  Devolve essa jogada
+ *  Devolve o carater inserido
  *********/ 
 char ask_play(struct player a){
     char play;
-    bool flag;
+    bool valid;
     printf("\n\nDigite uma jogada das listadas acima: ");
         do{
             scanf(" %c",&play);
-            if( ( flag=validate_play(a,play) )==0 ){
+            if( ( valid=validate_play(a,play) )==0 ){
                 printf("Por favor digite uma jogada das listadas acima: ");
                 clean_stdin();
             }
-        }while(flag==0);
+        }while(valid==0);
         clean_stdin();
         return play;
 }
@@ -176,37 +174,36 @@ char ask_play(struct player a){
  * Coloca as coordenadas introduzidas em "place"
  */
 void ask_place(struct coordinates *place, int lin, int col){
-    int flag=0;
-    place->x=place->y=-1;
+    int n_inputs=0, valid_place=0;
     printf("Digite as coordenadas do tabuleiro em que quer inserir a peca: ");
     do{
-        if( ( flag=scanf("%d%d",&place->x,&place->y) ) !=2){
+        if( ( n_inputs=scanf("%d%d",&place->x,&place->y) ) !=2){
             printf("Digite as coordenadas no formato certo x y: ");
             clean_stdin();
             continue; 
         }
-        if(is_inside(*place,lin,col)==0)
+        if( ( valid_place=is_valid_place(*place,lin,col) ) ==0)
             printf("Digite coordenadas validas: ");
       clean_stdin();
-    }while(flag!=2 || is_inside(*place,lin,col)==0);
+    }while(n_inputs!=2 || valid_place==0);
 }
 
 
 /*******
  * bool interpret_play(tabuleiro de jogo, numero de linhas do tabuleiro, numero de colunas do tabuleiro
- * ,jogada, coordenadas de insercao de uma peca, ponteiro para jogador)
- * Recebe uma jogada "play" e se for valida coloca no tabuleiro a peca que corresponde a essa jogada 
- * e atualiza as habilidades do jogador, se for necessario.
- * Retorna 0 se a jogada for valida
- * Retorna 1 a jogada for invalida.
+ * ,carater que representa uma jogada, coordenadas de uma celula do tabuleiro, ponteiro para jogador)
+ * Se "play" for uma jogada valida coloca no tabuleiro, na posicao "place", a peca que corresponde a essa jogada 
+ * e atualiza as jogadas que o jogador pode realizar, se for necessario
+ * Retorna 1 se a jogada for valida
+ * Retorna 0 a jogada for invalida.
  */
-bool interpret_play(char **tab, int lin, int col, char play,struct coordinates place, struct player *a){
-    --place.x; --place.y;
+bool interpret_play(char **tab, int lin, int col, char play, struct coordinates place, struct player *a){
+    --place.x; --place.y; //coordenadas foram introduzidas pelo utilizador
     switch(play){
         case 'G': 
             if(cell_has_piece(tab,' ',place)==0){ //se nao tiver ' ' nao se pode meter verde
                 printf(OCC_POS);
-                return 1;
+                return 0;
             }
             tab[place.x][place.y]='G';
         break;
@@ -214,7 +211,7 @@ bool interpret_play(char **tab, int lin, int col, char play,struct coordinates p
         case 'Y' : 
             if(cell_has_piece(tab,'G',place)==0){
                 printf("Nessa posicao nao esta uma peca verde para ser trocada\n");
-                return 1;
+                return 0;
             }
             tab[place.x][place.y]='Y';
         break;
@@ -222,7 +219,7 @@ bool interpret_play(char **tab, int lin, int col, char play,struct coordinates p
         case 'R': 
             if(cell_has_piece(tab,'Y',place)==0){
                 printf("Nessa posicao nao esta uma peca amarela para ser trocada\n");
-                return 1;
+                return 0;
             }
             tab[place.x][place.y]='R';
         break;
@@ -230,37 +227,35 @@ bool interpret_play(char **tab, int lin, int col, char play,struct coordinates p
         case 'S': 
             if(cell_has_piece(tab,' ',place)==0){
                 printf(OCC_POS);
-                return 1; 
+                return 0; 
             }
             tab[place.x][place.y]='S';
             a->ability.rock=0;
         break;
       }
-    return 0;
+    return 1;
 }
 
 
 /*******
- * char ** add_l_c(ponteiro para o tabuleiro de jogo, ponteiro para o numero de linhas do tabuleiro,
+ * char ** add_l_c(tabuleiro de jogo, ponteiro para o numero de linhas do tabuleiro,
  * ponteiro para o numero de colunas do tabuleiro, jogada , ponteiro para jogador)
  * Conforme o valor de "play"('C' ou 'L'), adiciona uma linha ou uma coluna ao tabuleiro de jogo, atualizando
  * tambem as linhas ou as colunas(recebidas por referencia), dependendo do valor de "play"
  * Decrementa a habilidade de inserir linhas ou colunas do jogador recebido por referencia
- * Em caso de sucesso devolve o tabuleiro do jogo.
- * Em caso de erro limpa o tabuleiro e retorna NULL
+ * Em caso de sucesso devolve o tabuleiro do jogo com dimensoes aumentadas.
+ * Em caso de erro limpa o tabuleiro de jogo e retorna NULL
  */
-char **add_l_c(char ***tab, int *lin, int *col, char play, struct player *a){
-    char **aux;
+char **add_l_c(char **tab, int *lin, int *col, char play, struct player *a){
     if(play=='C'){
-        if( ( aux=add_col(*tab,*lin,col) )==NULL)
+        if( add_col(tab,*lin,col)==NULL)
             return NULL;
         a->ability.lc-=1;
     }
     else{ 
-        if( ( aux=add_lin(*tab,lin,*col) )==NULL)
+        if( ( tab=add_lin(tab,lin,*col) )==NULL)
             return NULL;
-        *tab=aux;
         a->ability.lc-=1;
     }
-return *tab;
+return tab;
 }

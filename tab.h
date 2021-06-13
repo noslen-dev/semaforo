@@ -13,4 +13,4 @@ bool check_diagonals(char **tab, int lin, int col);
 char **create_tab_fixed_lc(int lin, int col);
 void tab_copy(char **orig, char **dest, int lin, int col);
 
-#endif
+#endif //TAB_H

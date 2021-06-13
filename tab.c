@@ -16,9 +16,9 @@ static void init_lin(char *lin, int col){
 }
 
 /*************
- * static void init_col(tabuleiro de jogo, numero de linhas atual do tabuleiro,
+ * static void init_col(tabuleiro de jogo, numero de linhas do tabuleiro,
  * indice de uma coluna do tabuleiro)
- * Inicializa com ' ', a coluna que corresponde ao indice passado como argumento
+ * Inicializa com ' ', a coluna do tabuleiro que corresponde ao indice passado como argumento
  ***************/
 static void init_col(char **tab, int lin, int col){
     int i;
@@ -67,9 +67,7 @@ char **create_tab(int *lin, int *col){
     for(i=0; i<*lin; ++i)
         if( ( tab[i]=(char *)malloc(sizeof(char)* *lin) )==NULL ){
             fprintf(stderr,"Erro ao criar o tabuleiro\n");
-            while(--i && i>=0)
-                free(tab[i]); //limpar as linhas que foram alocadas com sucesso
-            free(tab);
+            free_tab(tab,i);
             return NULL;
       }
     init_tab(tab,*lin,*col);
@@ -78,8 +76,8 @@ char **create_tab(int *lin, int *col){
 
 
 /*************
- *  void draw_tab(tabuleiro de jogo, numero de linhas do tabueleiro, numero de colunas do tabuleiro)
- *  Desenha o tabuleiro do jogo.
+ *  void draw_tab(tabuleiro de jogo, numero de linhas do tabuleiro, numero de colunas do tabuleiro)
+ *  Desenha o tabuleiro de jogo.
  ***************/
 void draw_tab(char **tab, int lin, int col){
     int i,j,aux;
@@ -116,7 +114,7 @@ void draw_tab(char **tab, int lin, int col){
  *  numero de colunas do tabuleiro)
  *  Adiciona uma linha ao tabuleiro de jogo, e preenche a linha com ' '
  *  Incrementa o numero de linhas(recebido como argumento)
- *  Se as alocacoes falharem, a função limpa o tabuleiro e retorna NULL
+ *  Se a alocacao falhar, a função limpa o tabuleiro e retorna NULL
  *  Se tudo correr bem devolve o tabuleiro
  ***************/
 char **add_lin(char **tab ,int *lin, int col){
@@ -156,8 +154,8 @@ char **add_col(char **tab ,int lin, int *col){
             free_tab(tab,lin);
             return NULL;
         }
-      else
-          tab[i]=aux;
+        else
+            tab[i]=aux;
     ++*col;
     init_col(tab,lin,*col-1);
 return tab;
@@ -206,8 +204,7 @@ return 0;
 /*************
  *  bool check_diagonals(tabuleiro de jogo, numero de linhas do tabuleiro, 
  *  numero de colunas do tabuleiro)
- *  Verifica se qualquer uma das diagonais contem carateres todos iguais exeto ' '
- *  e 'S'
+ *  Verifica se qualquer uma das diagonais contem carateres todos iguais exeto ' ' e 'S'
  *  Devolve 1 em caso afirmativo, e 0 em caso contrario
  ***************/
 bool check_diagonals(char **tab, int lin, int col){
@@ -228,13 +225,12 @@ bool check_diagonals(char **tab, int lin, int col){
 return 1;
 }
 
-
 /*************
  *  char **create_tab_fixed_lc(numero de linhas, numero de colunas)
  *  Cria um tabuleiro de jogo "lin" x "col"
- *  Devolve o tabuleiro, se tudo correu bem
+ *  Devolve o tabuleiro em caso de sucesso
  *  Devolve NULL em caso de erro
- *  Nao deixa memoria por libertar
+ *  Esta funcao nao deixa memoria por libertar
  ***************/
 char **create_tab_fixed_lc(int lin, int col){
     char **tab;
@@ -246,9 +242,7 @@ char **create_tab_fixed_lc(int lin, int col){
     for(i=0; i<lin; ++i)
         if( ( tab[i]=(char *)malloc(sizeof(char)* lin) )==NULL ){
             fprintf(stderr,"Erro ao criar um tabuleiro de tamanho fixo\n");
-            while(--i && i>=0)
-                free(tab[i]);
-            free(tab);
+            free_tab(tab,i);
             return NULL;
         }
     init_tab(tab,lin,col);
@@ -257,8 +251,8 @@ char **create_tab_fixed_lc(int lin, int col){
 
 
 /***
- * void tab_copy(tabuleiro original, tabuleiro destino, numero de linhas do tabuleiro("orig"), 
- * numero de colunas do tabuleiro("orig"))
+ * void tab_copy(tabuleiro original, tabuleiro destino, numero de linhas do tabuleiro original, 
+ * numero de colunas do tabuleiro original)
  * Copia os conteudos de "orig" para "dest".
  */ 
 void tab_copy(char **orig, char **dest, int lin, int col){
