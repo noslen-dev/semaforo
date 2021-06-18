@@ -1,0 +1,32 @@
+======== Regras ========
+
+O jogo do semaforo tem lugar num tabuleiro dividido em celulas. No inicio o tabuleiro esta vazio e os jogadores,
+jogador A e jogador B, ao longo do jogo, alternadamente vao colocando pecas verdes(G), amarelas(Y) ou vermelhas(R).
+Ganha o jogador que consiga formar uma linha ou coluna com pecas da mesma cor!
+
+As jogadas validas relativamente a colocacao de pecas sao as seguintes:
+
+1.Colocar uma peca verde numa celula vazia
+2.Trocar uma peca verde por uma amarela
+3.Trocar uma peca amarela por uma vermelha
+O numero destas pecas e ilimitado.
+
+Existem ainda 2 jogadas "especiais" que ambos os jogadores podem realizar:
+
+4.Colocar uma pedra numa celula vazia. Cada jogador pode no maximo colocar 1 pedra numa celula vazia por jogo.
+A colocacao desta pedra inviabiliza que o jogo possa terminar por preenchimento da linha, coluna e diagonal afetada.
+5.Adicionar uma linha ou uma coluna vazia ao final do tabuleiro. Por jogo cada jogador pode realizar esta jogada 2 vezes.
+
+O jogo esta feito de forma a ser intuitivo e facil de jogar, por esse motivo, o programa ira indicar-lhe sempre quais as jogadas
+que podera realizar, basta carregar no carater associado a uma jogada(indicado pelo programa) e se for o caso, inserir as coordenadas
+em que quer que a sua peca seja inserida.
+O programa ira guia-lo em todos os seus pacos!
+
+Em termos de regras do jogo esta praticamente tudo dito, vale a pena salientar que,pode jogar contra outra pessoa(na mesma maquina)
+ou jogar o jogo contra o computador(opcoes que pode escolher no menu principal).
+
+A meio do jogo podera tambem interromper o jogo para o poder continuar mais tarde,e se o fizer, o jogo sera guardado
+num ficheiro com o nome "jogo.bin", e desde que nao apague este ficheiro, podera fechar a aplicacao
+e, da proxima vez que a iniciar, o programa dar-lhe-a a opcao de retomar o seu jogo anterior.
+
+No final do jogo, desenhos do tabuleiro e informacao sobre as jogadas serao escritas num ficheiro .txt, para que possa rever o seu jogo.
